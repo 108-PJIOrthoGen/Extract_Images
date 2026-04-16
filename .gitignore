@@ -1,0 +1,28 @@
+# Environments / Secrets
+.env
+
+# Generated Output
+outputs/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+env.bak/
+venv.bak/
+
+# IDE / Editors
+.vscode/
+.claude/
+.idea/
+*.swp
+*.swo
+
+# OS / System
+.DS_Store
+Thumbs.db
