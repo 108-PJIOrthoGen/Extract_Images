@@ -1,0 +1,911 @@
+{
+  "document": {
+    "title": "Phiếu Kết Quả Cận Lâm Sàng",
+    "hospital": "Bệnh viện TWQD 108 - Bộ Quốc Phòng",
+    "record_number": "",
+    "exam_date": "",
+    "report_generated_at": ""
+  },
+  "patient": {
+    "full_name": "",
+    "age": ,
+    "gender": "",
+    "address": "",
+    "card_number": "",
+    "clinical_diagnosis": ""
+  },
+  "test_results": {
+    "section_1_xet_nghiem": {
+      "group_1_huyet_hoc_B1C_24h_ESR": {
+        "department": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "tests": [
+          {
+            "stt": 1,
+            "name": "Máu lắng (bằng máy tự động)",
+            "value": ,
+            "flag": ,
+            "reference_range": "<10",
+            "unit": "mm"
+          }
+        ]
+      },
+      "group_2_mien_dich_B1C_CRP": {
+        "department": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "tests": [
+          {
+            "stt": 1,
+            "name": "Định lượng CRP (C-Reactive Protein)",
+            "value": ,
+            "flag": ,
+            "reference_range": "0 - 5",
+            "unit": "mg/l"
+          }
+        ]
+      },
+      "group_3_vi_sinh_B1C_culture_1": {
+        "department": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "tests": [
+          {
+            "stt": 1,
+            "name": "Vi khuẩn nuôi cấy và định danh hệ thống tự động",
+            "value": "",
+            "flag": ,
+            "reference_range": null,
+            "unit": null
+          }
+        ]
+      },
+      "group_4_huyet_hoc_B1C_joint_fluid_cytology": {
+        "department": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "category": "Xét nghiệm tế bào trong nước dịch chẩn đoán tế bào học (não tủy, màng tim, màng phổi, bụng, dịch khớp, rửa phế quản,...) bằng phương pháp thủ công",
+        "tests": [
+          {
+            "stt": 2,
+            "name": "Màu sắc",
+            "value": "",
+            "flag": ,
+            "reference_range": null,
+            "unit": "Tế bào/Vi trường"
+          },
+          {
+            "stt": 3,
+            "name": "Hồng cầu",
+            "value": "",
+            "flag": ,
+            "reference_range": null,
+            "unit": "Tế bào/Vi trường"
+          },
+          {
+            "stt": 4,
+            "name": "Bạch cầu",
+            "value": "",
+            "flag": ,
+            "reference_range": null,
+            "unit": null
+          },
+          {
+            "stt": 5,
+            "name": "%Neutrophil",
+            "value": ,
+            "flag": ,
+            "reference_range": null,
+            "unit": "%"
+          },
+          {
+            "stt": 6,
+            "name": "%Lymphocyte",
+            "value": ,
+            "flag": ,
+            "reference_range": null,
+            "unit": "%"
+          },
+          {
+            "stt": 7,
+            "name": "Loại dịch",
+            "value": "",
+            "flag": ,
+            "reference_range": null,
+            "unit": null
+          }
+        ]
+      },
+      "group_5_vi_sinh_B1C_culture_2": {
+        "department": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "tests": [
+          {
+            "stt": 1,
+            "name": "Vi khuẩn nuôi cấy và định danh hệ thống tự động",
+            "value": "",
+            "flag": ,
+            "reference_range": null,
+            "unit": null
+          }
+        ]
+      },
+      "group_6_huyet_hoc_B1C_CBC_26Feb": {
+        "department": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "category": "Tổng phân tích tế bào máu ngoại vi (bằng máy đếm laser)",
+        "tests": [
+          {
+            "stt": 2,
+            "name": "WBC",
+            "value": ,
+            "flag": ,
+            "reference_range": "4 - 10",
+            "unit": "G/L"
+          },
+          {
+            "stt": 3,
+            "name": "%NEUT",
+            "value": ,
+            "flag": ,
+            "reference_range": "40 - 74",
+            "unit": "%"
+          },
+          {
+            "stt": 4,
+            "name": "%LYMPH",
+            "value": ,
+            "flag": ,
+            "reference_range": "19 - 48",
+            "unit": "%"
+          },
+          {
+            "stt": 5,
+            "name": "%MONO",
+            "value": ,
+            "flag": ,
+            "reference_range": "3.4 - 9",
+            "unit": "%"
+          },
+          {
+            "stt": 6,
+            "name": "%EOS",
+            "value": ,
+            "flag": ,
+            "reference_range": "0 - 7",
+            "unit": "%"
+          },
+          {
+            "stt": 7,
+            "name": "%BASO",
+            "value": ,
+            "flag": ,
+            "reference_range": "0 - 1.5",
+            "unit": "%"
+          },
+          {
+            "stt": 8,
+            "name": "#NEUT",
+            "value": ,
+            "flag": ,
+            "reference_range": "1.9 - 8",
+            "unit": "G/L"
+          },
+          {
+            "stt": 9,
+            "name": "#LYMPH",
+            "value": ,
+            "flag": ,
+            "reference_range": "0.9 - 5.2",
+            "unit": "G/L"
+          },
+          {
+            "stt": 10,
+            "name": "#MONO",
+            "value": ,
+            "flag": ,
+            "reference_range": "0.16 - 1",
+            "unit": "G/L"
+          },
+          {
+            "stt": 11,
+            "name": "#EOS",
+            "value": ,
+            "flag": ,
+            "reference_range": "0 - 0.8",
+            "unit": "G/L"
+          },
+          {
+            "stt": 12,
+            "name": "#BASO",
+            "value": ,
+            "flag": ,
+            "reference_range": "0 - 0.2",
+            "unit": "G/L"
+          },
+          {
+            "stt": 13,
+            "name": "RBC",
+            "value": ,
+            "flag": ,
+            "reference_range": "3.8 - 5.0",
+            "unit": "T/L"
+          },
+          {
+            "stt": 14,
+            "name": "HGB",
+            "value": ,
+            "flag": ,
+            "reference_range": "120 - 150",
+            "unit": "g/L"
+          },
+          {
+            "stt": 15,
+            "name": "HCT",
+            "value": ,
+            "flag": ,
+            "reference_range": "0.335 - 0.45",
+            "unit": "L/L"
+          },
+          {
+            "stt": 16,
+            "name": "MCV",
+            "value": ,
+            "flag": ,
+            "reference_range": "75 - 96",
+            "unit": "fL"
+          },
+          {
+            "stt": 17,
+            "name": "MCH",
+            "value": ,
+            "flag": ,
+            "reference_range": "24 - 33",
+            "unit": "Pg"
+          },
+          {
+            "stt": 18,
+            "name": "MCHC",
+            "value": ,
+            "flag": ,
+            "reference_range": "316 - 372",
+            "unit": "g/L"
+          },
+          {
+            "stt": 19,
+            "name": "RDW",
+            "value": ,
+            "flag": ,
+            "reference_range": "11.5 - 14.5",
+            "unit": "%"
+          },
+          {
+            "stt": 20,
+            "name": "PLT",
+            "value": ,
+            "flag": ,
+            "reference_range": "150 - 450",
+            "unit": "G/L"
+          },
+          {
+            "stt": 21,
+            "name": "MPV",
+            "value": ,
+            "flag": ,
+            "reference_range": "6 - 11",
+            "unit": "fL"
+          },
+          {
+            "stt": 22,
+            "name": "IG%",
+            "value": ,
+            "flag": ,
+            "reference_range": "0 - 0.5",
+            "unit": "%"
+          },
+          {
+            "stt": 23,
+            "name": "IG",
+            "value": ,
+            "flag": ,
+            "reference_range": "0 - 0.03",
+            "unit": "G/L"
+          },
+          {
+            "stt": 24,
+            "name": "NRBC",
+            "value": ,
+            "flag": ,
+            "reference_range": "<0.1",
+            "unit": "G/L"
+          }
+        ]
+      },
+      "group_7_huyet_hoc_C13_CBC_full": {
+        "department": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "category": "Tổng phân tích tế bào máu ngoại vi (bằng máy đếm laser)",
+        "tests": [
+          {
+            "stt": 2,
+            "name": "WBC",
+            "value": ,
+            "flag": ,
+            "reference_range": "4 - 10",
+            "unit": "G/L"
+          },
+          {
+            "stt": 3,
+            "name": "%NEUT",
+            "value": ,
+            "flag": ,
+            "reference_range": "40 - 74",
+            "unit": "%"
+          },
+          {
+            "stt": 4,
+            "name": "%LYMPH",
+            "value": ,
+            "flag": ,
+            "reference_range": "19 - 48",
+            "unit": "%"
+          },
+          {
+            "stt": 5,
+            "name": "%MONO",
+            "value": ,
+            "flag": ,
+            "reference_range": "3.4 - 9",
+            "unit": "%"
+          },
+          {
+            "stt": 6,
+            "name": "%EOS",
+            "value": ,
+            "flag": ,
+            "reference_range": "0 - 1.5",
+            "unit": "%"
+          },
+          {
+            "stt": 7,
+            "name": "%BASO",
+            "value": ,
+            "flag": ,
+            "reference_range": "0 - 4",
+            "unit": "%"
+          },
+          {
+            "stt": 8,
+            "name": "%LUC",
+            "value": ,
+            "flag": ,
+            "reference_range": "1.9 - 8",
+            "unit": "%"
+          },
+          {
+            "stt": 9,
+            "name": "#NEUT",
+            "value": ,
+            "flag": ,
+            "reference_range": "0.9 - 5.2",
+            "unit": "G/L"
+          },
+          {
+            "stt": 10,
+            "name": "#LYMPH",
+            "value": ,
+            "flag": ,
+            "reference_range": "0.16 - 1",
+            "unit": "G/L"
+          },
+          {
+            "stt": 11,
+            "name": "#MONO",
+            "value": ,
+            "flag": ,
+            "reference_range": "0 - 0.8",
+            "unit": "G/L"
+          },
+          {
+            "stt": 12,
+            "name": "#EOS",
+            "value": ,
+            "flag": ,
+            "reference_range": "0 - 0.2",
+            "unit": "G/L"
+          },
+          {
+            "stt": 13,
+            "name": "#BASO",
+            "value": ,
+            "flag": ,
+            "reference_range": "0 - 0.4",
+            "unit": "G/L"
+          },
+          {
+            "stt": 14,
+            "name": "#LUC",
+            "value": ,
+            "flag": ,
+            "reference_range": null,
+            "unit": "G/L"
+          },
+          {
+            "stt": 15,
+            "name": "RBC",
+            "value": ,
+            "flag": ,
+            "reference_range": "3.8 - 5.0",
+            "unit": "T/L"
+          },
+          {
+            "stt": 16,
+            "name": "HGB",
+            "value": ,
+            "flag": ,
+            "reference_range": "120 - 150",
+            "unit": "g/L"
+          },
+          {
+            "stt": 17,
+            "name": "HCT",
+            "value": ,
+            "flag": ,
+            "reference_range": "0.335 - 0.45",
+            "unit": "L/L"
+          },
+          {
+            "stt": 18,
+            "name": "MCV",
+            "value": ,
+            "flag": ,
+            "reference_range": "75 - 96",
+            "unit": "fL"
+          },
+          {
+            "stt": 19,
+            "name": "MCH",
+            "value": ,
+            "flag": ,
+            "reference_range": "24 - 33",
+            "unit": "Pg"
+          },
+          {
+            "stt": 20,
+            "name": "MCHC",
+            "value": ,
+            "flag": ,
+            "reference_range": "316 - 372",
+            "unit": "g/L"
+          },
+          {
+            "stt": 21,
+            "name": "CHCM",
+            "value": ,
+            "flag": ,
+            "reference_range": "316 - 375",
+            "unit": "g/L"
+          },
+          {
+            "stt": 22,
+            "name": "CH",
+            "value": ,
+            "flag": ,
+            "reference_range": "24 - 33",
+            "unit": "Pg"
+          },
+          {
+            "stt": 23,
+            "name": "RDW",
+            "value": ,
+            "flag": ,
+            "reference_range": "11.5 - 14.5",
+            "unit": "%"
+          },
+          {
+            "stt": 24,
+            "name": "HDW",
+            "value": ,
+            "flag": ,
+            "reference_range": "11.6 - 31.6",
+            "unit": "g/L"
+          },
+          {
+            "stt": 25,
+            "name": "PLT",
+            "value": ,
+            "flag": ,
+            "reference_range": "150 - 450",
+            "unit": "G/L"
+          },
+          {
+            "stt": 26,
+            "name": "MPV",
+            "value": ,
+            "flag": ,
+            "reference_range": "6 - 11",
+            "unit": "fL"
+          },
+          {
+            "stt": 27,
+            "name": "NRBC",
+            "value": ,
+            "flag": ,
+            "reference_range": "<0.1",
+            "unit": "G/L"
+          }
+        ]
+      },
+      "group_8_dong_mau_C13_coagulation": {
+        "department": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "tests": [
+          {
+            "stt": 1,
+            "category": "Thời gian prothrombin (PT) bằng máy tự động",
+            "sub_tests": [
+              {
+                "name": "PT-RP(s)",
+                "value": ,
+                "flag": ,
+                "reference_range": "10 - 14",
+                "unit": "Giây"
+              },
+              {
+                "name": "PT-RP(%)",
+                "value": ,
+                "flag": ,
+                "reference_range": "70 - 140",
+                "unit": "%"
+              },
+              {
+                "name": "INR(RP)",
+                "value": ,
+                "flag": ,
+                "reference_range": "0.8 - 1.2",
+                "unit": null
+              }
+            ]
+          },
+          {
+            "stt": 5,
+            "category": "Thời gian thromboplastin một phần hoạt hóa (APTT) bằng máy tự động",
+            "sub_tests": [
+              {
+                "name": "APTT-SP(s)",
+                "value": ,
+                "flag": ,
+                "reference_range": "25 - 38",
+                "unit": "Giây"
+              },
+              {
+                "name": "APTT-SP(R)",
+                "value": ,
+                "flag": ,
+                "reference_range": "0.85 - 1.25",
+                "unit": null
+              }
+            ]
+          },
+          {
+            "stt": 8,
+            "name": "Định lượng Fibrinogen (FIB-C1) - phương pháp Clauss, bằng máy tự động",
+            "value": ,
+            "flag": ,
+            "reference_range": "2 - 4",
+            "unit": "g/L"
+          }
+        ]
+      },
+      "group_9_sinh_hoa_mau_C13_biochemistry": {
+        "department": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "tests": [
+          {
+            "stt": 1,
+            "name": "Định lượng Glucose [Máu]",
+            "value": ,
+            "flag": ,
+            "reference_range": "4.1 - 5.6",
+            "unit": "mmol/l"
+          },
+          {
+            "stt": 2,
+            "name": "Định lượng Urê máu [Máu]",
+            "value": ,
+            "flag": ,
+            "reference_range": "2.8 - 7.2",
+            "unit": "mmol/l"
+          },
+          {
+            "stt": 3,
+            "name": "Định lượng Creatinin (máu)",
+            "value": ,
+            "flag": ,
+            "reference_range": "45 - 84",
+            "unit": "µmol/l"
+          },
+          {
+            "stt": 4,
+            "name": "Đo hoạt độ AST (GOT) [Máu]",
+            "value": ,
+            "flag": ,
+            "reference_range": "<35",
+            "unit": "U/l"
+          },
+          {
+            "stt": 5,
+            "name": "Đo hoạt độ ALT (GPT) [Máu]",
+            "value": ,
+            "flag": ,
+            "reference_range": "<35",
+            "unit": "U/l"
+          }
+          {
+            "stt": 7,
+            "name": "Na+",
+            "value": ,
+            "flag": ,
+            "reference_range": "135 - 145",
+            "unit": "mmol/L"
+          },
+          {
+            "stt": 8,
+            "name": "K+",
+            "value": ,
+            "flag": ,
+            "reference_range": "3.5 - 5.0",
+            "unit": "mmol/L"
+          },
+          {
+            "stt": 9,
+            "name": "CL-",
+            "value": ,
+            "flag": ,
+            "reference_range": "98 - 106",
+            "unit": "mmol/L"
+          }
+        ]
+      },
+      "group_10_truyen_mau_C13_blood_typing": {
+        "department": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "tests": [
+          {
+            "stt": 1,
+            "name": "Định nhóm máu hệ ABO, Rh(D) - Kỹ thuật Scangel/Gelcard trên máy tự động",
+            "sub_tests": [
+              {
+                "name": "ABO",
+                "value": ,
+                "flag": ,
+                "reference_range": null,
+                "unit": null
+              },
+              {
+                "name": "Rh",
+                "value": ,
+                "flag": ,
+                "reference_range": null,
+                "unit": null
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "section_2_chan_doan_hinh_anh": {
+      "exam_1_xray_knee": {
+        "name": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "result": ""
+      },
+      "exam_2_xray_chest": {
+        "name": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "result": ""
+      }
+    },
+    "section_3_tham_do_chuc_nang": {
+      "exam_1_ecg": {
+        "name": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "result": ""
+      },
+      "exam_2_ultrasound_joint": {
+        "name": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "result": ""
+      },
+      "exam_3_joint_aspiration": {
+        "name": "",
+        "time_collected": "",
+        "time_resulted": "",
+        "result": ""
+      }
+    }
+  },
+  "abnormal_flags_summary": {
+    "HIGH": [
+      {
+        "test": "Máu lắng",
+        "value": ,
+        "unit": "mm",
+        "reference": "<10"
+      },
+      {
+        "test": "CRP",
+        "value": ,
+        "unit": "mg/l",
+        "reference": "0-5"
+      },
+      {
+        "test": "WBC",
+        "value": ,
+        "unit": "G/L",
+        "reference": "4-10"
+      },
+      {
+        "test": "%NEUT",
+        "value": ,
+        "unit": "%",
+        "reference": "40-74"
+      },
+      {
+        "test": "%MONO",
+        "value": ,
+        "unit": "%",
+        "reference": "3.4-9"
+      },
+      {
+        "test": "#NEUT",
+        "value": ,
+        "unit": "G/L",
+        "reference": "1.9-8"
+      },
+      {
+        "test": "#MONO",
+        "value": ,
+        "unit": "G/L",
+        "reference": "0.16-1"
+      },
+      {
+        "test": "WBC",
+        "value": ,
+        "unit": "G/L",
+        "reference": "4-10"
+      },
+      {
+        "test": "%NEUT",
+        "value": ,
+        "unit": "%",
+        "reference": "40-74"
+      },
+      {
+        "test": "#NEUT",
+        "value": ,
+        "unit": "G/L",
+        "reference": "0.9-5.2"
+      },
+      {
+        "test": "#MONO",
+        "value": ,
+        "unit": "G/L",
+        "reference": "0-0.8"
+      },
+      {
+        "test": "RDW",
+        "value": ,
+        "unit": "%",
+        "reference": "11.5-14.5"
+      },
+      {
+        "test": "IG%",
+        "value": ,
+        "unit": "%",
+        "reference": "0-0.5"
+      },
+      {
+        "test": "IG",
+        "value": ,
+        "unit": "G/L",
+        "reference": "0-0.03"
+      },
+      {
+        "test": "Fibrinogen",
+        "value": ,
+        "unit": "g/L",
+        "reference": "2-4"
+      },
+      {
+        "test": "Glucose",
+        "value": ,
+        "unit": "mmol/l",
+        "reference": "4.1-5.6"
+      },
+      {
+        "test": "AST (GOT)",
+        "value": ,
+        "unit": "U/l",
+        "reference": "<35"
+      },
+      {
+        "test": "ALT (GPT)",
+        "value": ,
+        "unit": "U/l",
+        "reference": "<35"
+      }
+    ],
+    "LOW": [
+      {
+        "test": "HGB",
+        "value": ,
+        "unit": "g/L",
+        "reference": "120-150"
+      },
+      {
+        "test": "HCT",
+        "value": ,
+        "unit": "L/L",
+        "reference": "0.335-0.45"
+      },
+      {
+        "test": "RBC",
+        "value": ,
+        "unit": "T/L",
+        "reference": "3.8-5.0"
+      },
+      {
+        "test": "%LYMPH",
+        "value": ,
+        "unit": "%",
+        "reference": "19-48"
+      },
+      {
+        "test": "HGB",
+        "value": ,
+        "unit": "g/L",
+        "reference": "120-150"
+      },
+      {
+        "test": "%LYMPH",
+        "value": ,
+        "unit": "%",
+        "reference": "19-48"
+      },
+      {
+        "test": "Na+",
+        "value": ,
+        "unit": "mmol/L",
+        "reference": "135-145"
+      },
+      {
+        "test": "CL-",
+        "value": ,
+        "unit": "mmol/L",
+        "reference": "98-106"
+      }
+    ],
+    "POSITIVE_CULTURE": [
+      {
+        "test": "Vi khuẩn nuôi cấy ngày đầu",
+        "organism":
+      },
+      {
+        "test": "Vi khuẩn nuôi cấy ngày sau",
+        "organism":
+      }
+    ]
+  }
+}
