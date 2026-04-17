@@ -15,6 +15,7 @@ from extractor.config import (
     RABBITMQ_PASSWORD,
     RABBITMQ_QUEUE,
     UPLOAD_DIR,
+    OUTPUTS_DIR,
 )
 
 app = FastAPI(title="Image Processing API", version="1.0.0")
@@ -79,6 +80,24 @@ async def upload_image(file: UploadFile = File(...)):
     return JSONResponse(
         content={"job_id": job_id, "status": "queued", "message": "Image sent to processing queue"},
         status_code=202,
+    )
+
+
+@app.get("/result/{job_id}")
+async def get_result(job_id: str):
+    output_path = OUTPUTS_DIR / f"{job_id}.json"
+
+    if not output_path.exists():
+        return JSONResponse(
+            content={"job_id": job_id, "status": "processing"},
+            status_code=202,
+        )
+
+    async with aiofiles.open(output_path, "r", encoding="utf-8") as f:
+        result = await f.read()
+
+    return JSONResponse(
+        content={"job_id": job_id, "status": "completed", "data": json.loads(result)},
     )
 
 
