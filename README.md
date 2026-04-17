@@ -156,6 +156,7 @@ python -m worker.consumer
 | Method | Endpoint | Mô tả |
 |--------|----------|-------|
 | POST | `/upload` | Upload ảnh, gửi vào queue |
+| GET | `/result/{job_id}` | Lấy kết quả JSON theo template |
 | GET | `/health` | Health check |
 
 ### Cách Gọi API từ Web App
@@ -163,12 +164,21 @@ python -m worker.consumer
 ```python
 import requests
 
+# Bước 1: Upload ảnh
 url = "http://localhost:8000/upload"
 files = {"file": open("image.jpg", "rb")}
 
 response = requests.post(url, files=files)
-print(response.json())
+result = response.json()
+job_id = result["job_id"]
 # Output: {"job_id": "uuid-here", "status": "queued", "message": "Image sent to processing queue"}
+
+# Bước 2: Kiểm tra kết quả (poll)
+result_url = f"http://localhost:8000/result/{job_id}"
+result_response = requests.get(result_url)
+result_data = result_response.json()
+# Processing: {"job_id": "uuid", "status": "processing"}
+# Completed: {"job_id": "uuid", "status": "completed", "data": {...JSON theo template...}}
 ```
 
 Kết quả sẽ được lưu tại `outputs/{job_id}.json` sau khi worker xử lý xong.
