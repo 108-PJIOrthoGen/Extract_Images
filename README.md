@@ -109,3 +109,76 @@ pytest
 ```bash
 ruff check .
 ```
+
+## Kiến Trúc Message Queue (Web App Integration)
+
+Dự án hỗ trợ kiến trúc bất đồng bộ sử dụng RabbitMQ để web app có thể gửi ảnh cho team AI xử lý.
+
+### Sơ Đồ Luồng Dữ Liệu
+
+```
+[Web App] --upload ảnh--> [FastAPI /upload] --message--> [RabbitMQ] --consume--> [Worker] --gọi VLM--> [Lưu JSON]
+```
+
+### Yêu Cầu
+
+- RabbitMQ server đang chạy
+- Cài đặt thêm dependencies:
+```bash
+uv sync
+```
+
+### Cấu Hình RabbitMQ
+
+Thêm vào file `.env`:
+```env
+RABBITMQ_HOST=localhost
+RABBITMQ_PORT=5672
+RABBITMQ_USER=guest
+RABBITMQ_PASSWORD=guest
+RABBITMQ_QUEUE=image_processing
+```
+
+### Cách Chạy
+
+**1. Chạy API Server (nhận upload từ web app):**
+```bash
+uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+**2. Chạy Worker (xử lý ảnh từ queue):**
+```bash
+python -m worker.consumer
+```
+
+### API Endpoints
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| POST | `/upload` | Upload ảnh, gửi vào queue |
+| GET | `/result/{job_id}` | Lấy kết quả JSON theo template |
+| GET | `/health` | Health check |
+
+### Cách Gọi API từ Web App
+
+```python
+import requests
+
+# Bước 1: Upload ảnh
+url = "http://localhost:8000/upload"
+files = {"file": open("image.jpg", "rb")}
+
+response = requests.post(url, files=files)
+result = response.json()
+job_id = result["job_id"]
+# Output: {"job_id": "uuid-here", "status": "queued", "message": "Image sent to processing queue"}
+
+# Bước 2: Kiểm tra kết quả (poll)
+result_url = f"http://localhost:8000/result/{job_id}"
+result_response = requests.get(result_url)
+result_data = result_response.json()
+# Processing: {"job_id": "uuid", "status": "processing"}
+# Completed: {"job_id": "uuid", "status": "completed", "data": {...JSON theo template...}}
+```
+
+Kết quả sẽ được lưu tại `outputs/{job_id}.json` sau khi worker xử lý xong.
