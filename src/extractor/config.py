@@ -22,5 +22,11 @@ RABBITMQ_USER = os.getenv("RABBITMQ_USER", "guest")
 RABBITMQ_PASSWORD = os.getenv("RABBITMQ_PASSWORD", "guest")
 RABBITMQ_QUEUE = os.getenv("RABBITMQ_QUEUE", "image_processing")
 
+# API details
+OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
+
+# Retry configuration for rate limiting
+VLM_MAX_RETRIES = int(os.getenv("VLM_MAX_RETRIES", "5"))
+VLM_BASE_DELAY = float(os.getenv("VLM_BASE_DELAY", "1.0"))
 OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)

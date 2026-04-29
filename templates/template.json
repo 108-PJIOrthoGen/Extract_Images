@@ -8,7 +8,7 @@
   },
   "patient": {
     "full_name": "",
-    "age": ,
+    "age": null,
     "gender": "",
     "address": "",
     "card_number": "",
@@ -24,8 +24,8 @@
           {
             "stt": 1,
             "name": "Máu lắng (bằng máy tự động)",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "<10",
             "unit": "mm"
           }
@@ -39,8 +39,8 @@
           {
             "stt": 1,
             "name": "Định lượng CRP (C-Reactive Protein)",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0 - 5",
             "unit": "mg/l"
           }
@@ -55,7 +55,7 @@
             "stt": 1,
             "name": "Vi khuẩn nuôi cấy và định danh hệ thống tự động",
             "value": "",
-            "flag": ,
+            "flag": null,
             "reference_range": null,
             "unit": null
           }
@@ -71,7 +71,7 @@
             "stt": 2,
             "name": "Màu sắc",
             "value": "",
-            "flag": ,
+            "flag": null,
             "reference_range": null,
             "unit": "Tế bào/Vi trường"
           },
@@ -79,7 +79,7 @@
             "stt": 3,
             "name": "Hồng cầu",
             "value": "",
-            "flag": ,
+            "flag": null,
             "reference_range": null,
             "unit": "Tế bào/Vi trường"
           },
@@ -87,23 +87,23 @@
             "stt": 4,
             "name": "Bạch cầu",
             "value": "",
-            "flag": ,
+            "flag": null,
             "reference_range": null,
             "unit": null
           },
           {
             "stt": 5,
             "name": "%Neutrophil",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": null,
             "unit": "%"
           },
           {
             "stt": 6,
             "name": "%Lymphocyte",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": null,
             "unit": "%"
           },
@@ -111,7 +111,7 @@
             "stt": 7,
             "name": "Loại dịch",
             "value": "",
-            "flag": ,
+            "flag": null,
             "reference_range": null,
             "unit": null
           }
@@ -126,7 +126,7 @@
             "stt": 1,
             "name": "Vi khuẩn nuôi cấy và định danh hệ thống tự động",
             "value": "",
-            "flag": ,
+            "flag": null,
             "reference_range": null,
             "unit": null
           }
@@ -141,184 +141,184 @@
           {
             "stt": 2,
             "name": "WBC",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "4 - 10",
             "unit": "G/L"
           },
           {
             "stt": 3,
             "name": "%NEUT",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "40 - 74",
             "unit": "%"
           },
           {
             "stt": 4,
             "name": "%LYMPH",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "19 - 48",
             "unit": "%"
           },
           {
             "stt": 5,
             "name": "%MONO",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "3.4 - 9",
             "unit": "%"
           },
           {
             "stt": 6,
             "name": "%EOS",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0 - 7",
             "unit": "%"
           },
           {
             "stt": 7,
             "name": "%BASO",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0 - 1.5",
             "unit": "%"
           },
           {
             "stt": 8,
             "name": "#NEUT",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "1.9 - 8",
             "unit": "G/L"
           },
           {
             "stt": 9,
             "name": "#LYMPH",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0.9 - 5.2",
             "unit": "G/L"
           },
           {
             "stt": 10,
             "name": "#MONO",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0.16 - 1",
             "unit": "G/L"
           },
           {
             "stt": 11,
             "name": "#EOS",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0 - 0.8",
             "unit": "G/L"
           },
           {
             "stt": 12,
             "name": "#BASO",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0 - 0.2",
             "unit": "G/L"
           },
           {
             "stt": 13,
             "name": "RBC",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "3.8 - 5.0",
             "unit": "T/L"
           },
           {
             "stt": 14,
             "name": "HGB",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "120 - 150",
             "unit": "g/L"
           },
           {
             "stt": 15,
             "name": "HCT",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0.335 - 0.45",
             "unit": "L/L"
           },
           {
             "stt": 16,
             "name": "MCV",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "75 - 96",
             "unit": "fL"
           },
           {
             "stt": 17,
             "name": "MCH",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "24 - 33",
             "unit": "Pg"
           },
           {
             "stt": 18,
             "name": "MCHC",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "316 - 372",
             "unit": "g/L"
           },
           {
             "stt": 19,
             "name": "RDW",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "11.5 - 14.5",
             "unit": "%"
           },
           {
             "stt": 20,
             "name": "PLT",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "150 - 450",
             "unit": "G/L"
           },
           {
             "stt": 21,
             "name": "MPV",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "6 - 11",
             "unit": "fL"
           },
           {
             "stt": 22,
             "name": "IG%",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0 - 0.5",
             "unit": "%"
           },
           {
             "stt": 23,
             "name": "IG",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0 - 0.03",
             "unit": "G/L"
           },
           {
             "stt": 24,
             "name": "NRBC",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "<0.1",
             "unit": "G/L"
           }
@@ -333,208 +333,208 @@
           {
             "stt": 2,
             "name": "WBC",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "4 - 10",
             "unit": "G/L"
           },
           {
             "stt": 3,
             "name": "%NEUT",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "40 - 74",
             "unit": "%"
           },
           {
             "stt": 4,
             "name": "%LYMPH",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "19 - 48",
             "unit": "%"
           },
           {
             "stt": 5,
             "name": "%MONO",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "3.4 - 9",
             "unit": "%"
           },
           {
             "stt": 6,
             "name": "%EOS",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0 - 1.5",
             "unit": "%"
           },
           {
             "stt": 7,
             "name": "%BASO",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0 - 4",
             "unit": "%"
           },
           {
             "stt": 8,
             "name": "%LUC",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "1.9 - 8",
             "unit": "%"
           },
           {
             "stt": 9,
             "name": "#NEUT",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0.9 - 5.2",
             "unit": "G/L"
           },
           {
             "stt": 10,
             "name": "#LYMPH",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0.16 - 1",
             "unit": "G/L"
           },
           {
             "stt": 11,
             "name": "#MONO",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0 - 0.8",
             "unit": "G/L"
           },
           {
             "stt": 12,
             "name": "#EOS",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0 - 0.2",
             "unit": "G/L"
           },
           {
             "stt": 13,
             "name": "#BASO",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0 - 0.4",
             "unit": "G/L"
           },
           {
             "stt": 14,
             "name": "#LUC",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": null,
             "unit": "G/L"
           },
           {
             "stt": 15,
             "name": "RBC",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "3.8 - 5.0",
             "unit": "T/L"
           },
           {
             "stt": 16,
             "name": "HGB",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "120 - 150",
             "unit": "g/L"
           },
           {
             "stt": 17,
             "name": "HCT",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "0.335 - 0.45",
             "unit": "L/L"
           },
           {
             "stt": 18,
             "name": "MCV",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "75 - 96",
             "unit": "fL"
           },
           {
             "stt": 19,
             "name": "MCH",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "24 - 33",
             "unit": "Pg"
           },
           {
             "stt": 20,
             "name": "MCHC",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "316 - 372",
             "unit": "g/L"
           },
           {
             "stt": 21,
             "name": "CHCM",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "316 - 375",
             "unit": "g/L"
           },
           {
             "stt": 22,
             "name": "CH",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "24 - 33",
             "unit": "Pg"
           },
           {
             "stt": 23,
             "name": "RDW",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "11.5 - 14.5",
             "unit": "%"
           },
           {
             "stt": 24,
             "name": "HDW",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "11.6 - 31.6",
             "unit": "g/L"
           },
           {
             "stt": 25,
             "name": "PLT",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "150 - 450",
             "unit": "G/L"
           },
           {
             "stt": 26,
             "name": "MPV",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "6 - 11",
             "unit": "fL"
           },
           {
             "stt": 27,
             "name": "NRBC",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "<0.1",
             "unit": "G/L"
           }
@@ -551,22 +551,22 @@
             "sub_tests": [
               {
                 "name": "PT-RP(s)",
-                "value": ,
-                "flag": ,
+                "value": null,
+                "flag": null,
                 "reference_range": "10 - 14",
                 "unit": "Giây"
               },
               {
                 "name": "PT-RP(%)",
-                "value": ,
-                "flag": ,
+                "value": null,
+                "flag": null,
                 "reference_range": "70 - 140",
                 "unit": "%"
               },
               {
                 "name": "INR(RP)",
-                "value": ,
-                "flag": ,
+                "value": null,
+                "flag": null,
                 "reference_range": "0.8 - 1.2",
                 "unit": null
               }
@@ -578,15 +578,15 @@
             "sub_tests": [
               {
                 "name": "APTT-SP(s)",
-                "value": ,
-                "flag": ,
+                "value": null,
+                "flag": null,
                 "reference_range": "25 - 38",
                 "unit": "Giây"
               },
               {
                 "name": "APTT-SP(R)",
-                "value": ,
-                "flag": ,
+                "value": null,
+                "flag": null,
                 "reference_range": "0.85 - 1.25",
                 "unit": null
               }
@@ -595,8 +595,8 @@
           {
             "stt": 8,
             "name": "Định lượng Fibrinogen (FIB-C1) - phương pháp Clauss, bằng máy tự động",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "2 - 4",
             "unit": "g/L"
           }
@@ -610,64 +610,64 @@
           {
             "stt": 1,
             "name": "Định lượng Glucose [Máu]",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "4.1 - 5.6",
             "unit": "mmol/l"
           },
           {
             "stt": 2,
             "name": "Định lượng Urê máu [Máu]",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "2.8 - 7.2",
             "unit": "mmol/l"
           },
           {
             "stt": 3,
             "name": "Định lượng Creatinin (máu)",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "45 - 84",
             "unit": "µmol/l"
           },
           {
             "stt": 4,
             "name": "Đo hoạt độ AST (GOT) [Máu]",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "<35",
             "unit": "U/l"
           },
           {
             "stt": 5,
             "name": "Đo hoạt độ ALT (GPT) [Máu]",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "<35",
             "unit": "U/l"
-          }
+          },
           {
             "stt": 7,
             "name": "Na+",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "135 - 145",
             "unit": "mmol/L"
           },
           {
             "stt": 8,
             "name": "K+",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "3.5 - 5.0",
             "unit": "mmol/L"
           },
           {
             "stt": 9,
             "name": "CL-",
-            "value": ,
-            "flag": ,
+            "value": null,
+            "flag": null,
             "reference_range": "98 - 106",
             "unit": "mmol/L"
           }
@@ -684,15 +684,15 @@
             "sub_tests": [
               {
                 "name": "ABO",
-                "value": ,
-                "flag": ,
+                "value": null,
+                "flag": null,
                 "reference_range": null,
                 "unit": null
               },
               {
                 "name": "Rh",
-                "value": ,
-                "flag": ,
+                "value": null,
+                "flag": null,
                 "reference_range": null,
                 "unit": null
               }
@@ -740,109 +740,109 @@
     "HIGH": [
       {
         "test": "Máu lắng",
-        "value": ,
+        "value": null,
         "unit": "mm",
         "reference": "<10"
       },
       {
         "test": "CRP",
-        "value": ,
+        "value": null,
         "unit": "mg/l",
         "reference": "0-5"
       },
       {
         "test": "WBC",
-        "value": ,
+        "value": null,
         "unit": "G/L",
         "reference": "4-10"
       },
       {
         "test": "%NEUT",
-        "value": ,
+        "value": null,
         "unit": "%",
         "reference": "40-74"
       },
       {
         "test": "%MONO",
-        "value": ,
+        "value": null,
         "unit": "%",
         "reference": "3.4-9"
       },
       {
         "test": "#NEUT",
-        "value": ,
+        "value": null,
         "unit": "G/L",
         "reference": "1.9-8"
       },
       {
         "test": "#MONO",
-        "value": ,
+        "value": null,
         "unit": "G/L",
         "reference": "0.16-1"
       },
       {
         "test": "WBC",
-        "value": ,
+        "value": null,
         "unit": "G/L",
         "reference": "4-10"
       },
       {
         "test": "%NEUT",
-        "value": ,
+        "value": null,
         "unit": "%",
         "reference": "40-74"
       },
       {
         "test": "#NEUT",
-        "value": ,
+        "value": null,
         "unit": "G/L",
         "reference": "0.9-5.2"
       },
       {
         "test": "#MONO",
-        "value": ,
+        "value": null,
         "unit": "G/L",
         "reference": "0-0.8"
       },
       {
         "test": "RDW",
-        "value": ,
+        "value": null,
         "unit": "%",
         "reference": "11.5-14.5"
       },
       {
         "test": "IG%",
-        "value": ,
+        "value": null,
         "unit": "%",
         "reference": "0-0.5"
       },
       {
         "test": "IG",
-        "value": ,
+        "value": null,
         "unit": "G/L",
         "reference": "0-0.03"
       },
       {
         "test": "Fibrinogen",
-        "value": ,
+        "value": null,
         "unit": "g/L",
         "reference": "2-4"
       },
       {
         "test": "Glucose",
-        "value": ,
+        "value": null,
         "unit": "mmol/l",
         "reference": "4.1-5.6"
       },
       {
         "test": "AST (GOT)",
-        "value": ,
+        "value": null,
         "unit": "U/l",
         "reference": "<35"
       },
       {
         "test": "ALT (GPT)",
-        "value": ,
+        "value": null,
         "unit": "U/l",
         "reference": "<35"
       }
@@ -850,49 +850,49 @@
     "LOW": [
       {
         "test": "HGB",
-        "value": ,
+        "value": null,
         "unit": "g/L",
         "reference": "120-150"
       },
       {
         "test": "HCT",
-        "value": ,
+        "value": null,
         "unit": "L/L",
         "reference": "0.335-0.45"
       },
       {
         "test": "RBC",
-        "value": ,
+        "value": null,
         "unit": "T/L",
         "reference": "3.8-5.0"
       },
       {
         "test": "%LYMPH",
-        "value": ,
+        "value": null,
         "unit": "%",
         "reference": "19-48"
       },
       {
         "test": "HGB",
-        "value": ,
+        "value": null,
         "unit": "g/L",
         "reference": "120-150"
       },
       {
         "test": "%LYMPH",
-        "value": ,
+        "value": null,
         "unit": "%",
         "reference": "19-48"
       },
       {
         "test": "Na+",
-        "value": ,
+        "value": null,
         "unit": "mmol/L",
         "reference": "135-145"
       },
       {
         "test": "CL-",
-        "value": ,
+        "value": null,
         "unit": "mmol/L",
         "reference": "98-106"
       }
@@ -900,11 +900,11 @@
     "POSITIVE_CULTURE": [
       {
         "test": "Vi khuẩn nuôi cấy ngày đầu",
-        "organism":
+        "organism": null
       },
       {
         "test": "Vi khuẩn nuôi cấy ngày sau",
-        "organism":
+        "organism": null
       }
     ]
   }
