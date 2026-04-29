@@ -228,41 +228,41 @@ sequenceDiagram
     participant VLM as OpenRouter
     participant FS as File System
 
-    Note over Client,VLM: CLI Mode hoặc API Mode
+    Note over Client,VLM: CLI Mode or API Mode
 
     %% CLI Mode
-    Client->>FS: Đọc ảnh từ images/
-    FS-->>Client: Trả ảnh
-    
-    %% API Mode  
+    Client->>FS: Read images from images/
+    FS-->>Client: Return images
+
+    %% API Mode
     Client->>API: POST /upload (files)
-    API->>FS: Lưu ảnh vào uploads/
+    API->>FS: Save images to uploads/
     API->>MQ: Publish message
-    
+
     MQ->>Worker: Consume message
-    
-    Note over Worker,VLM: Worker xử lý (cả 2 mode)
-    
-    Worker->>FS: Đọc ảnh
-    Worker->>FS: Đọc template.json
-    Worker->>VLM: Gọi API với prompt + ảnh
-    
+
+    Note over Worker,VLM: Worker process (both modes)
+
+    Worker->>FS: Read images
+    Worker->>FS: Read template.json
+    Worker->>VLM: Call API with prompt + images
+
     loop Retry Logic (max_retries)
         VLM-->>Worker: Response JSON
         Worker->>Worker: Validate JSON vs template
-        alt JSON không hợp lệ
-            Worker->>VLM: Retry với error context
-        else JSON hợp lệ
+        alt JSON invalid
+            Worker->>VLM: Retry with error context
+        else JSON valid
             break
         end
     end
-    
-    Worker->>FS: Lưu kết quả outputs/{job_id}.json
-    
-    %% API Mode - Lấy kết quả
+
+    Worker->>FS: Save result outputs/{job_id}.json
+
+    %% API Mode - Get result
     Client->>API: GET /result/{job_id}
-    API->>FS: Đọc outputs/{job_id}.json
-    API-->>Client: Trả kết quả JSON
+    API->>FS: Read outputs/{job_id}.json
+    API-->>Client: Return result JSON
 ```
 
 ## License
