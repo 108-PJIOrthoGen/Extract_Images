@@ -168,8 +168,8 @@ graph TB
 
     subgraph "API Layer"
         API[FastAPI: extractor.api.app]
-        UPLOAD[/upload endpoint]
-        RESULT[/result/{job_id} endpoint]
+        UPLOAD[POST /upload]
+        RESULT[GET /result]
     end
 
     subgraph "Message Queue"
