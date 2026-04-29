@@ -221,45 +221,41 @@ graph TB
 
 ```mermaid
 sequenceDiagram
-    participant C as Client
-    participant API as FastAPI
-    participant MQ as RabbitMQ
-    participant W as Worker
-    participant VLM as VLM
-    participant FS as FileSystem
+    participant Client
+    participant API
+    participant MQ
+    participant Worker
+    participant VLM
+    participant FS
 
-    Note over C,VLM: CLI Mode or API Mode
+    Client->>FS: Read images
+    FS->>Client: Return images
 
-    C->>FS: Read images
-    FS-->>C: Return images
-
-    C->>API: Upload files
+    Client->>API: Upload files
     API->>FS: Save images
     API->>MQ: Publish message
 
-    MQ->>W: Consume message
+    MQ->>Worker: Consume message
 
-    Note over W,VLM: Worker process
-
-    W->>FS: Read images
-    W->>FS: Read template.json
-    W->>VLM: Call API
+    Worker->>FS: Read images
+    Worker->>FS: Read template
+    Worker->>VLM: Call API
 
     loop Retry
-        VLM-->>W: Response JSON
-        W->>W: Validate
+        VLM->>Worker: Response
+        Worker->>Worker: Validate
         alt Invalid
-            W->>VLM: Retry
+            Worker->>VLM: Retry
         else Valid
             break
         end
     end
 
-    W->>FS: Save result
+    Worker->>FS: Save result
 
-    C->>API: Get result
+    Client->>API: Get result
     API->>FS: Read result
-    API-->>C: Return JSON
+    API->>Client: Return JSON
 ```
 
 ## License
