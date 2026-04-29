@@ -1,5 +1,5 @@
-import pytest
 from extractor.core.template_parser import fix_malformed_json
+
 
 def test_fix_malformed_json_trailing_comma():
     # Trường hợp thiếu value do thừa phẩy

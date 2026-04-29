@@ -3,6 +3,7 @@
 
 # Generated Output
 outputs/
+uploads/
 
 # Python Cache
 __pycache__/
@@ -15,6 +16,11 @@ venv/
 .venv/
 env.bak/
 venv.bak/
+
+# Tool caches
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
 
 # IDE / Editors
 .vscode/
