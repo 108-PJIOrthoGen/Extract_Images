@@ -220,42 +220,34 @@ graph TB
 ### Luồng Xử Lý Chi Tiết
 
 ```mermaid
-sequenceDiagram
-    participant Client
-    participant API
-    participant MQ
-    participant Worker
-    participant VLM
-    participant FS
-
-    Client->>FS: Read images
-    FS->>Client: Return images
-
-    Client->>API: Upload files
-    API->>FS: Save images
-    API->>MQ: Publish message
-
-    MQ->>Worker: Consume message
-
-    Worker->>FS: Read images
-    Worker->>FS: Read template
-    Worker->>VLM: Call API
-
-    loop Retry
-        VLM->>Worker: Response
-        Worker->>Worker: Validate
-        alt Invalid
-            Worker->>VLM: Retry
-        else Valid
-            break
-        end
+flowchart LR
+    subgraph Client
+        CLI[CLI]
+        WEB[Web]
     end
-
-    Worker->>FS: Save result
-
-    Client->>API: Get result
-    API->>FS: Read result
-    API->>Client: Return JSON
+    
+    subgraph Server
+        API[API]
+        MQ{Queue}
+    end
+    
+    subgraph Worker
+        W[Worker]
+    end
+    
+    subgraph VLM
+        V[VLM]
+    end
+    
+    subgraph Storage
+        IMG[images/]
+        TMP[templates/]
+        OUT[outputs/]
+    end
+    
+    CLI --> IMG --> W --> TMP --> V --> OUT
+    WEB --> API --> MQ --> W
+    OUT --> WEB
 ```
 
 ## License
