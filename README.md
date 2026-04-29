@@ -19,6 +19,19 @@ Dự án này là công cụ tự động trích xuất thông tin từ hình �
 git clone https://github.com/108-PJIOrthoGen/Extract_data_from_images.git
 cd Extract_data_from_images
 
+# Tạo và kích hoạt virtual environment
+python -m venv .venv
+
+# Linux / macOS
+source .venv/bin/activate
+
+# Windows (PowerShell)
+.venv\Scripts\Activate
+
+# Kiểm tra đã active chưa
+which python  # Linux/macOS
+Get-Command python  # Windows
+
 # Cài đặt dependencies
 uv sync
 pip install -e .
@@ -29,40 +42,40 @@ pip install -e .
 Copy `.env.example` thành `.env` và thêm API key:
 ```env
 OPENROUTER_API_KEY="your_api_key_here"
-OPENROUTER_MODEL="google/gemini-1.5-pro"
+OPENROUTER_MODEL="google/gemini-3.1-flash-lite-preview"
 ```
 
 ## Tổ Chức Thư Mục
 
 ```
 Extract_data_from_images/
-├── src/extractor/               # Main package
-│   ├── api/                     # FastAPI application
-│   │   ├── app.py              # App factory + lifespan
-│   │   └── routes.py           # API endpoints
-│   ├── clients/                 # External API clients
-│   │   └── vlm_client.py        # OpenRouter VLM client
-│   ├── core/                    # Domain logic
-│   │   ├── extractor.py        # ExtractionPipeline orchestrator
-│   │   ├── prompt_builder.py   # Prompt construction
-│   │   ├── response_validator.py # Validation logic
-│   │   └── template_parser.py  # Template parsing
-│   ├── loaders/                 # Input adapters
-│   │   └── image_loader.py     # Image loading & Base64 encoding
-│   ├── models/                  # Pydantic schemas
-│   │   └── template.py         # Template validation
-│   ├── worker/                  # RabbitMQ consumer
-│   │   └── consumer.py         # Async message consumer
+├── src/extractor/                 # Main package
+│   ├── api/                       # FastAPI application
+│   │   ├── app.py                 # App factory + lifespan
+│   │   └── routes.py              # API endpoints
+│   ├── clients/                   # External API clients
+│   │   └── vlm_client.py          # OpenRouter VLM client
+│   ├── core/                      # Domain logic
+│   │   ├── extractor.py           # ExtractionPipeline orchestrator
+│   │   ├── prompt_builder.py      # Prompt construction
+│   │   ├── response_validator.py  # Validation logic
+│   │   └── template_parser.py     # Template parsing
+│   ├── loaders/                   # Input adapters
+│   │   └── image_loader.py        # Image loading & Base64 encoding
+│   ├── models/                    # Pydantic schemas
+│   │   └── template.py            # Template validation
+│   ├── worker/                    # RabbitMQ consumer
+│   │   └── consumer.py            # Async message consumer
 │   ├── utils/
-│   │   └── logger.py           # Logging configuration
-│   ├── config.py               # Settings with validation
-│   ├── exceptions.py           # Exception hierarchy
-│   └── main.py                 # CLI entry point
-├── tests/                       # Unit tests
+│   │   └── logger.py              # Logging configuration
+│   ├── config.py                  # Settings with validation
+│   ├── exceptions.py              # Exception hierarchy
+│   └── main.py                    # CLI entry point
+├── tests/                         # Unit tests
 ├── templates/
-│   └── template.json           # JSON template
-├── images/                      # Input images
-├── outputs/                    # Output JSON files
+│   └── template.json              # JSON template
+├── images/                        # Input images
+├── outputs/                       # Output JSON files
 ├── Dockerfile
 ├── docker-compose.yml
 ├── Makefile
@@ -84,12 +97,12 @@ uv run extract-data --input images/test_case_01 --max-retries 3
 ### Sử dụng Makefile (Recommended)
 ```bash
 make install      # Cài đặt dependencies
-make dev         # Cài đặt dev dependencies
-make run         # Chạy CLI
-make run-api     # Chạy FastAPI server
-make run-worker  # Chạy RabbitMQ worker
-make test        # Chạy tests
-make lint        # Kiểm tra code style
+make dev          # Cài đặt dev dependencies
+make run          # Chạy CLI
+make run-api      # Chạy FastAPI server
+make run-worker   # Chạy RabbitMQ worker
+make test         # Chạy tests
+make lint         # Kiểm tra code style
 ```
 
 ### Docker
