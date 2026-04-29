@@ -221,48 +221,45 @@ graph TB
 
 ```mermaid
 sequenceDiagram
-    participant Client as Client/API
+    participant C as Client
     participant API as FastAPI
     participant MQ as RabbitMQ
-    participant Worker as Worker
-    participant VLM as OpenRouter
-    participant FS as File System
+    participant W as Worker
+    participant VLM as VLM
+    participant FS as FileSystem
 
-    Note over Client,VLM: CLI Mode or API Mode
+    Note over C,VLM: CLI Mode or API Mode
 
-    %% CLI Mode
-    Client->>FS: Read images from images/
-    FS-->>Client: Return images
+    C->>FS: Read images
+    FS-->>C: Return images
 
-    %% API Mode
-    Client->>API: POST /upload (files)
-    API->>FS: Save images to uploads/
+    C->>API: Upload files
+    API->>FS: Save images
     API->>MQ: Publish message
 
-    MQ->>Worker: Consume message
+    MQ->>W: Consume message
 
-    Note over Worker,VLM: Worker process (both modes)
+    Note over W,VLM: Worker process
 
-    Worker->>FS: Read images
-    Worker->>FS: Read template.json
-    Worker->>VLM: Call API with prompt + images
+    W->>FS: Read images
+    W->>FS: Read template.json
+    W->>VLM: Call API
 
-    loop Retry Logic (max_retries)
-        VLM-->>Worker: Response JSON
-        Worker->>Worker: Validate JSON vs template
-        alt JSON invalid
-            Worker->>VLM: Retry with error context
-        else JSON valid
+    loop Retry
+        VLM-->>W: Response JSON
+        W->>W: Validate
+        alt Invalid
+            W->>VLM: Retry
+        else Valid
             break
         end
     end
 
-    Worker->>FS: Save result outputs/{job_id}.json
+    W->>FS: Save result
 
-    %% API Mode - Get result
-    Client->>API: GET /result/{job_id}
-    API->>FS: Read outputs/{job_id}.json
-    API-->>Client: Return result JSON
+    C->>API: Get result
+    API->>FS: Read result
+    API-->>C: Return JSON
 ```
 
 ## License
