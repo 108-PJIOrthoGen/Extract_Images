@@ -4,10 +4,10 @@ WORKDIR /app
 
 RUN pip install uv
 
-COPY pyproject.toml .
-RUN uv sync --no-dev --no-project
-
+COPY pyproject.toml README.md ./
 COPY src/ src/
 COPY templates/ templates/
 
-CMD ["uv", "run", "extract-data"]
+RUN uv pip install --system --no-cache .
+
+CMD ["extract-data"]
