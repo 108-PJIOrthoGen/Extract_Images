@@ -2,6 +2,8 @@
 
 import asyncio
 import json
+from datetime import datetime
+from pathlib import Path
 
 import aio_pika
 import aiofiles
@@ -11,24 +13,52 @@ from extractor.config import settings
 from extractor.core.extractor import ExtractionPipeline
 from extractor.core.template_parser import load_template_schema
 from extractor.loaders.image_loader import get_base64_image
+from extractor.observability import setup_tracing
 from extractor.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
+
+setup_tracing("extract-worker")
+
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+
+
+async def _write_status(job_id: str, status: str, **extra) -> None:
+    payload = {
+        "job_id": job_id,
+        "status": status,
+        "updated_at": datetime.now().isoformat(),
+        **extra,
+    }
+    status_path = settings.OUTPUTS_DIR / f"{job_id}.status.json"
+    async with aiofiles.open(status_path, "w", encoding="utf-8") as f:
+        await f.write(json.dumps(payload, ensure_ascii=False))
 
 
 async def on_message(message: aio_pika.IncomingMessage):
     """Process incoming message from RabbitMQ."""
     async with message.process():
+        job_id = "unknown"
         try:
             data = json.loads(message.body.decode())
             job_id = data["job_id"]
-            file_path = data["file_path"]
+            file_dir = Path(data["file_dir"])
 
-            logger.info(f"Processing job: {job_id}")
-            logger.info(f"Image path: {file_path}")
+            logger.info(f"Processing job: {job_id} from {file_dir}")
+            await _write_status(job_id, "processing")
+
+            if not file_dir.exists() or not file_dir.is_dir():
+                raise FileNotFoundError(f"Upload directory missing: {file_dir}")
+
+            image_paths = sorted(
+                p for p in file_dir.iterdir()
+                if p.is_file() and p.suffix.lower() in ALLOWED_EXTENSIONS
+            )
+            if not image_paths:
+                raise ValueError("No valid images found in upload directory")
 
             template_str = load_template_schema(settings.TEMPLATE_PATH)
-            base64_image = get_base64_image(file_path)
+            base64_images = [get_base64_image(str(p)) for p in image_paths]
 
             client = OpenRouterVLMClient()
             pipeline = ExtractionPipeline(
@@ -37,18 +67,23 @@ async def on_message(message: aio_pika.IncomingMessage):
                 base_delay=settings.VLM_BASE_DELAY,
             )
 
-            # Run sync extraction in thread pool
-            result = await asyncio.to_thread(pipeline.extract, template_str, [base64_image])
+            result = await asyncio.to_thread(
+                pipeline.extract, template_str, base64_images
+            )
 
             output_path = settings.OUTPUTS_DIR / f"{job_id}.json"
             async with aiofiles.open(output_path, "w", encoding="utf-8") as f:
                 await f.write(result)
 
+            await _write_status(job_id, "completed", file_count=len(image_paths))
             logger.info(f"Job {job_id} completed. Result saved to {output_path}")
 
         except Exception as e:
-            logger.error(f"Error processing message: {e}")
-            raise
+            logger.error(f"Error processing job {job_id}: {e}")
+            try:
+                await _write_status(job_id, "failed", error=str(e))
+            except Exception as status_err:
+                logger.error(f"Failed to persist failure status: {status_err}")
 
 
 async def main():

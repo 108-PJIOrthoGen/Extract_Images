@@ -8,7 +8,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# When the package is pip-installed (e.g. inside Docker), `__file__` lives under
+# site-packages and the `parent.parent.parent` walk lands somewhere unrelated to
+# the project layout. Allow an explicit override via the BASE_DIR env var.
+_base_dir_override = os.getenv("BASE_DIR")
+BASE_DIR = (
+    Path(_base_dir_override).resolve()
+    if _base_dir_override
+    else Path(__file__).resolve().parent.parent.parent
+)
 
 
 def _ensure_dir(path: Path) -> Path:
@@ -46,6 +54,9 @@ class Settings:
     VLM_BASE_DELAY: float = field(
         default_factory=lambda: float(os.getenv("VLM_BASE_DELAY", "1.0"))
     )
+    VLM_MAX_TOKENS: int = field(
+        default_factory=lambda: int(os.getenv("VLM_MAX_TOKENS", "16384"))
+    )
 
     # RabbitMQ
     RABBITMQ_HOST: str = field(
@@ -67,11 +78,13 @@ class Settings:
     # Paths (lazy -- only create on access)
     @property
     def OUTPUTS_DIR(self) -> Path:
-        return _ensure_dir(self.BASE_DIR / "outputs")
+        override = os.getenv("OUTPUTS_DIR")
+        return _ensure_dir(Path(override) if override else self.BASE_DIR / "outputs")
 
     @property
     def UPLOAD_DIR(self) -> Path:
-        return _ensure_dir(self.BASE_DIR / "uploads")
+        override = os.getenv("UPLOAD_DIR")
+        return _ensure_dir(Path(override) if override else self.BASE_DIR / "uploads")
 
     def validate(self) -> None:
         """Raise ValueError if config is invalid."""

@@ -7,9 +7,12 @@ from fastapi import FastAPI
 
 from extractor.api.routes import router
 from extractor.config import settings
+from extractor.observability import setup_tracing
 from extractor.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
+
+_tracing_enabled = setup_tracing("extract-api")
 
 
 @asynccontextmanager
@@ -43,6 +46,10 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
     app.include_router(router)
+    if _tracing_enabled:
+        from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+        FastAPIInstrumentor.instrument_app(app)
     return app
 
 

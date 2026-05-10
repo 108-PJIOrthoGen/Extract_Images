@@ -1,8 +1,10 @@
 """API routes for image processing."""
 
 import json
+import re
 import uuid
 from datetime import datetime
+from pathlib import Path
 
 import aio_pika
 import aiofiles
@@ -15,40 +17,82 @@ from extractor.utils.logger import setup_logger
 logger = setup_logger(__name__)
 router = APIRouter()
 
+MAX_FILES_PER_JOB = 10
+MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
+SAFE_FILENAME_RE = re.compile(r"[^A-Za-z0-9._-]+")
+
+
+def _sanitize_filename(name: str) -> str:
+    base = Path(name).name or "image"
+    cleaned = SAFE_FILENAME_RE.sub("_", base).strip("._") or "image"
+    return cleaned[:128]
+
+
+async def _write_status(job_id: str, status: str, **extra) -> None:
+    payload = {
+        "job_id": job_id,
+        "status": status,
+        "updated_at": datetime.now().isoformat(),
+        **extra,
+    }
+    status_path = settings.OUTPUTS_DIR / f"{job_id}.status.json"
+    async with aiofiles.open(status_path, "w", encoding="utf-8") as f:
+        await f.write(json.dumps(payload, ensure_ascii=False))
+
 
 @router.post("/upload")
 async def upload_images(request: Request, files: list[UploadFile] = File(...)):
     """Upload one or more images and queue them for processing."""
     if not files:
         raise HTTPException(status_code=400, detail="No files provided")
-
-    for f in files:
-        if not f.content_type.startswith("image/"):
-            raise HTTPException(
-                status_code=400,
-                detail=f"File {f.filename} is not an image",
-            )
+    if len(files) > MAX_FILES_PER_JOB:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Too many files (max {MAX_FILES_PER_JOB})",
+        )
 
     job_id = str(uuid.uuid4())
-    timestamp = datetime.now().isoformat()
-
     job_dir = settings.UPLOAD_DIR / job_id
     job_dir.mkdir(parents=True, exist_ok=True)
 
-    file_paths = []
+    saved_paths: list[str] = []
     for f in files:
-        file_path = job_dir / f.filename
-        async with aiofiles.open(file_path, "wb") as out:
-            content = await f.read()
-            await out.write(content)
-        file_paths.append(str(file_path))
+        if not f.content_type or f.content_type.lower() not in ALLOWED_CONTENT_TYPES:
+            raise HTTPException(
+                status_code=400,
+                detail=f"File {f.filename} has unsupported content type {f.content_type}",
+            )
+        ext = Path(f.filename or "").suffix.lower()
+        if ext not in ALLOWED_EXTENSIONS:
+            raise HTTPException(
+                status_code=400,
+                detail=f"File {f.filename} has unsupported extension",
+            )
 
+        safe_name = _sanitize_filename(f.filename or f"image{ext}")
+        file_path = job_dir / safe_name
+
+        content = await f.read()
+        if len(content) > MAX_FILE_SIZE_BYTES:
+            raise HTTPException(
+                status_code=400,
+                detail=f"File {f.filename} exceeds {MAX_FILE_SIZE_BYTES} bytes",
+            )
+        async with aiofiles.open(file_path, "wb") as out:
+            await out.write(content)
+        saved_paths.append(str(file_path))
+
+    timestamp = datetime.now().isoformat()
     message = {
         "job_id": job_id,
-        "file_count": len(files),
+        "file_count": len(saved_paths),
         "file_dir": str(job_dir),
         "timestamp": timestamp,
     }
+
+    await _write_status(job_id, "queued", file_count=len(saved_paths))
 
     channel = request.app.state.rabbitmq_channel
     await channel.default_exchange.publish(
@@ -63,7 +107,8 @@ async def upload_images(request: Request, files: list[UploadFile] = File(...)):
         content={
             "job_id": job_id,
             "status": "queued",
-            "message": f"{len(files)} image(s) sent to processing queue",
+            "file_count": len(saved_paths),
+            "message": f"{len(saved_paths)} image(s) sent to processing queue",
         },
         status_code=202,
     )
@@ -72,24 +117,62 @@ async def upload_images(request: Request, files: list[UploadFile] = File(...)):
 @router.get("/result/{job_id}")
 async def get_result(job_id: str):
     """Get extraction result by job ID."""
+    status_path = settings.OUTPUTS_DIR / f"{job_id}.status.json"
     output_path = settings.OUTPUTS_DIR / f"{job_id}.json"
 
-    if not output_path.exists():
+    status_payload: dict = {}
+    if status_path.exists():
+        async with aiofiles.open(status_path, encoding="utf-8") as f:
+            status_payload = json.loads(await f.read())
+
+    status = status_payload.get("status")
+
+    if status == "completed" and output_path.exists():
+        async with aiofiles.open(output_path, encoding="utf-8") as f:
+            data = json.loads(await f.read())
         return JSONResponse(
-            content={"job_id": job_id, "status": "processing"},
+            content={
+                "job_id": job_id,
+                "status": "completed",
+                "data": data,
+                "error": None,
+            },
+        )
+
+    if status == "failed":
+        return JSONResponse(
+            content={
+                "job_id": job_id,
+                "status": "failed",
+                "data": None,
+                "error": status_payload.get("error", "Extraction failed"),
+            },
+        )
+
+    if status in {"queued", "processing"}:
+        return JSONResponse(
+            content={
+                "job_id": job_id,
+                "status": status,
+                "data": None,
+                "error": None,
+            },
             status_code=202,
         )
 
-    async with aiofiles.open(output_path, encoding="utf-8") as f:
-        result = await f.read()
+    if output_path.exists():
+        async with aiofiles.open(output_path, encoding="utf-8") as f:
+            data = json.loads(await f.read())
+        return JSONResponse(
+            content={
+                "job_id": job_id,
+                "status": "completed",
+                "data": data,
+                "error": None,
+            },
+        )
 
-    return JSONResponse(
-        content={
-            "job_id": job_id,
-            "status": "completed",
-            "data": json.loads(result),
-        },
-    )
+    raise HTTPException(status_code=404, detail="Job not found")
 
 
 @router.get("/health")
