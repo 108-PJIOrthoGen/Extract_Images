@@ -35,6 +35,24 @@ async def _write_status(job_id: str, status: str, **extra) -> None:
         await f.write(json.dumps(payload, ensure_ascii=False))
 
 
+async def _is_cancelled(job_id: str) -> bool:
+    """Check whether the API marked this job cancelled.
+
+    The cancel endpoint writes status=cancelled and deletes the upload dir, so
+    the worker polls this at its checkpoints to avoid (a) overwriting the
+    cancelled status and (b) wasting a result on a job the user abandoned.
+    """
+    status_path = settings.OUTPUTS_DIR / f"{job_id}.status.json"
+    try:
+        if not status_path.exists():
+            return False
+        async with aiofiles.open(status_path, encoding="utf-8") as f:
+            payload = json.loads(await f.read())
+        return payload.get("status") == "cancelled"
+    except Exception:
+        return False
+
+
 async def on_message(message: aio_pika.IncomingMessage):
     """Process incoming message from RabbitMQ."""
     async with message.process():
@@ -43,6 +61,11 @@ async def on_message(message: aio_pika.IncomingMessage):
             data = json.loads(message.body.decode())
             job_id = data["job_id"]
             file_dir = Path(data["file_dir"])
+
+            # Cancelled before we picked it up — drop without touching status.
+            if await _is_cancelled(job_id):
+                logger.info(f"Job {job_id} already cancelled — skipping")
+                return
 
             logger.info(f"Processing job: {job_id} from {file_dir}")
             await _write_status(job_id, "processing")
@@ -71,6 +94,13 @@ async def on_message(message: aio_pika.IncomingMessage):
                 pipeline.extract, template_str, base64_images
             )
 
+            # The VLM call can't be interrupted; re-check once it returns so a
+            # cancel that landed mid-extraction still wins — we drop the result
+            # instead of resurrecting a job the user (and the API) deleted.
+            if await _is_cancelled(job_id):
+                logger.info(f"Job {job_id} cancelled during processing — dropping result")
+                return
+
             output_path = settings.OUTPUTS_DIR / f"{job_id}.json"
             async with aiofiles.open(output_path, "w", encoding="utf-8") as f:
                 await f.write(result)
@@ -80,6 +110,11 @@ async def on_message(message: aio_pika.IncomingMessage):
 
         except Exception as e:
             logger.error(f"Error processing job {job_id}: {e}")
+            # Don't overwrite a cancelled job with a failure (e.g. the cancel
+            # deleted the upload dir mid-run, raising FileNotFoundError here).
+            if await _is_cancelled(job_id):
+                logger.info(f"Job {job_id} was cancelled — ignoring error {e}")
+                return
             try:
                 await _write_status(job_id, "failed", error=str(e))
             except Exception as status_err:

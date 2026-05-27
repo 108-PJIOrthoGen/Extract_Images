@@ -2,6 +2,7 @@
 
 import json
 import re
+import shutil
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -149,6 +150,16 @@ async def get_result(job_id: str):
             },
         )
 
+    if status == "cancelled":
+        return JSONResponse(
+            content={
+                "job_id": job_id,
+                "status": "cancelled",
+                "data": None,
+                "error": None,
+            },
+        )
+
     if status in {"queued", "processing"}:
         return JSONResponse(
             content={
@@ -173,6 +184,30 @@ async def get_result(job_id: str):
         )
 
     raise HTTPException(status_code=404, detail="Job not found")
+
+
+@router.delete("/jobs/{job_id}")
+async def cancel_job(job_id: str):
+    """Cancel a job and delete its uploaded files + any result.
+
+    Marks the job ``cancelled`` first (so the worker, which polls this status
+    file at its checkpoints, drops the job instead of writing a result), then
+    removes the upload directory and result JSON so nothing lingers on disk.
+    Idempotent: cancelling an unknown or already-finished job is a no-op 200.
+    """
+    # Reject obvious path-traversal before touching the filesystem.
+    if "/" in job_id or "\\" in job_id or ".." in job_id:
+        raise HTTPException(status_code=400, detail="Invalid job id")
+
+    await _write_status(job_id, "cancelled")
+
+    job_dir = settings.UPLOAD_DIR / job_id
+    shutil.rmtree(job_dir, ignore_errors=True)
+    result_path = settings.OUTPUTS_DIR / f"{job_id}.json"
+    result_path.unlink(missing_ok=True)
+
+    logger.info("Cancelled job %s and removed its files", job_id)
+    return JSONResponse(content={"job_id": job_id, "status": "cancelled"})
 
 
 @router.get("/health")
