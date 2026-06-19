@@ -1,4 +1,4 @@
-.PHONY: install dev test lint run run-api run-worker
+.PHONY: install dev test lint typecheck run run-pdf run-api run-worker
 
 install:
 	uv sync
@@ -13,8 +13,14 @@ lint:
 	ruff check .
 	ruff format --check .
 
+typecheck:
+	mypy
+
 run:
-	uv run extract-data --input images/test_case_01
+	uv run extract-data --input data/images/test_case_01
+
+run-pdf:
+	uv run extract-data --input data/pdf
 
 run-api:
 	uvicorn extractor.api.app:app --host 0.0.0.0 --port 8000 --reload
