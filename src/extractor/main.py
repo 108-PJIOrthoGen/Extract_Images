@@ -8,7 +8,8 @@ from extractor.clients.vlm_client import OpenRouterVLMClient
 from extractor.config import settings
 from extractor.core.extractor import ExtractionPipeline
 from extractor.core.template_parser import load_template_schema
-from extractor.loaders.image_loader import load_images_from_directory
+from extractor.exceptions import ConfigurationError
+from extractor.loaders.image_loader import load_directory_with_manifest
 from extractor.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -21,8 +22,8 @@ def main():
     )
     parser.add_argument(
         "--input",
-        default="images/test_case_01",
-        help="Thu muc dau vao chua cac hinh anh can trich xuat.",
+        default="data/images/test_case_01",
+        help="Thu muc dau vao chua anh va/hoac PDF cua mot benh nhan.",
     )
     parser.add_argument(
         "--output",
@@ -44,22 +45,18 @@ def main():
 
     # Validate config
     try:
-        settings.validate()
-    except ValueError as e:
+        settings.validate_runtime()
+    except ConfigurationError as e:
         logger.error(f"Config error: {e}")
         sys.exit(1)
 
     input_dir = Path(args.input)
     if not input_dir.exists() or not input_dir.is_dir():
-        logger.error(
-            f"Thu muc dau vao khong hop le hoac khong ton tai: {input_dir}"
-        )
+        logger.error(f"Thu muc dau vao khong hop le hoac khong ton tai: {input_dir}")
         sys.exit(1)
 
     output_path = (
-        Path(args.output)
-        if args.output
-        else settings.OUTPUTS_DIR / f"{input_dir.name}.json"
+        Path(args.output) if args.output else settings.OUTPUTS_DIR / f"{input_dir.name}.json"
     )
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -70,14 +67,17 @@ def main():
         logger.error(f"That bai khi nap template: {e}")
         sys.exit(1)
 
-    logger.info(f"Buoc 2: Nap Hinh Anh tu {input_dir}...")
-    images_base64 = load_images_from_directory(input_dir)
+    logger.info(f"Buoc 2: Nap tai lieu (anh/PDF) tu {input_dir}...")
+    content_parts, manifest = load_directory_with_manifest(input_dir)
 
-    if not images_base64:
-        logger.warning("Khong tim thay hinh anh nao de xu ly. Dung chuong trinh.")
+    if not content_parts:
+        logger.warning("Khong tim thay anh/PDF nao de xu ly. Dung chuong trinh.")
         sys.exit(0)
 
-    logger.info(f"Da nap {len(images_base64)} hinh anh hop le.")
+    logger.info(
+        f"Da nap {len(content_parts)} trang tu {len(manifest)} file: "
+        + ", ".join(f"{m['file']}({m['pages']}tr,{m['mode']})" for m in manifest)
+    )
     logger.info("Buoc 3: Goi OpenRouter VLM de xu ly...")
 
     try:
@@ -86,7 +86,7 @@ def main():
             client=client,
             max_retries=args.max_retries or settings.VLM_MAX_RETRIES,
         )
-        extracted_info = pipeline.extract(template_str, images_base64)
+        extracted_info = pipeline.extract(template_str, content_parts, manifest)
 
         output_path.write_text(extracted_info, encoding="utf-8")
         logger.info(f"Thanh cong! Du lieu da duoc luu tai: {output_path}")
