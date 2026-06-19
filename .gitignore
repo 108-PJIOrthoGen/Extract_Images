@@ -4,6 +4,7 @@
 # Generated Output
 outputs/
 uploads/
+data/
 
 # Python Cache
 __pycache__/
