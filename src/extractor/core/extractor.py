@@ -4,11 +4,11 @@ import json
 import time
 
 from extractor.clients.vlm_client import OpenRouterVLMClient
+from extractor.config import settings
+from extractor.core import schema_keys as keys
+from extractor.core.completeness import build_extraction_meta
 from extractor.core.prompt_builder import build_extraction_prompt
-from extractor.core.response_validator import (
-    extract_keys,
-    validate_response,
-)
+from extractor.core.sparse_merge import merge_sparse_into_template
 from extractor.exceptions import ValidationError, VLMRateLimitError
 from extractor.utils.logger import setup_logger
 
@@ -28,20 +28,33 @@ class ExtractionPipeline:
         self.max_retries = max_retries
         self.base_delay = base_delay
 
-    def extract(self, template_str: str, base64_images: list[str]) -> str:
-        """Run extraction pipeline with validation and retry."""
-        template_key_count = len(extract_keys(json.loads(template_str)))
-        logger.info(f"Template co {template_key_count} keys can validate")
+    def extract(
+        self,
+        template_str: str,
+        content_parts: list[dict],
+        manifest: list[dict] | None = None,
+    ) -> str:
+        """Run extraction pipeline (SPARSE) with validation and retry.
+
+        ``template_str`` is the comprehensive template shown to the VLM for
+        reference. The VLM returns ONLY the data it found (sparse), which is then
+        merged onto a full copy of the template -> the output still contains every
+        field. ``content_parts`` are the mixed text/image pages. ``manifest`` maps
+        each page to its source file so the model reads every uploaded slip
+        (PDF + image) and merges them for the one patient.
+        """
+        template = json.loads(template_str)
+        logger.info(f"Bat dau trich xuat (sparse) tu {len(content_parts)} trang (text/anh)")
 
         last_error = ""
         for attempt in range(self.max_retries + 1):
             try:
                 logger.info(f"Attempt {attempt + 1}/{self.max_retries + 1}: Goi VLM...")
-                prompt = build_extraction_prompt(template_str, last_error)
-                response_text = self.client.call(prompt, base64_images)
+                prompt = build_extraction_prompt(template_str, last_error, manifest)
+                response_text = self.client.call(prompt, content_parts)
 
                 try:
-                    response_json = json.loads(response_text)
+                    sparse = json.loads(response_text)
                 except json.JSONDecodeError as e:
                     last_error = f"JSON parse error: {e}. Response: {response_text[:200]}"
                     logger.warning(f"Attempt {attempt + 1} - {last_error}")
@@ -49,18 +62,42 @@ class ExtractionPipeline:
                         continue
                     raise ValidationError(f"Invalid JSON after {attempt + 1} attempts: {e}") from e
 
-                errors = validate_response(template_str, response_json)
-                if errors:
-                    last_error = errors[0]
-                    logger.warning(f"Attempt {attempt + 1} - Thieu truong: {last_error}")
+                if not isinstance(sparse, dict) or not any(
+                    k in sparse for k in keys.SPARSE_TOP_LEVEL_KEYS
+                ):
+                    last_error = "Response khong dung dinh dang sparse mong doi."
+                    logger.warning(f"Attempt {attempt + 1} - {last_error}")
                     if attempt < self.max_retries:
                         continue
-                    raise ValidationError(
-                        f"Missing fields after {attempt + 1} attempts: {last_error}"
-                    )
+                    raise ValidationError(f"Bad sparse shape after {attempt + 1} attempts.")
 
-                logger.info("Validation thanh cong")
-                return json.dumps(response_json, indent=2, ensure_ascii=False)
+                # The VLM may flag uploaded files that are NOT lab results / do
+                # not match the template; surface that under extraction_meta.
+                unrecognized = sparse.pop(keys.SPARSE_UNRECOGNIZED, None)
+
+                # Merge the sparse payload onto the full template so the output
+                # keeps every field (missing ones stay null/"").
+                result = merge_sparse_into_template(template, sparse)
+
+                meta = build_extraction_meta(
+                    result,
+                    manifest,
+                    unrecognized,
+                    settings.LOW_FILL_RATE_THRESHOLD,
+                )
+                result[keys.EXTRACTION_META] = meta
+
+                c = meta["completeness"]
+                logger.info(
+                    "Merge thanh cong | fill_rate=%s | usable=%s | "
+                    "low_fill=%s | empty_groups=%s | warnings=%s",
+                    c["fill_rate"],
+                    c["has_usable_data"],
+                    c["low_fill_rate"],
+                    c["empty_groups"] or "none",
+                    meta["warnings"] or "none",
+                )
+                return json.dumps(result, indent=2, ensure_ascii=False)
 
             except VLMRateLimitError:
                 if attempt < self.max_retries:
