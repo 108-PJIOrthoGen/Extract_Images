@@ -13,15 +13,15 @@ from fastapi import APIRouter, File, HTTPException, Request, UploadFile
 from fastapi.responses import JSONResponse
 
 from extractor.config import settings
+from extractor.jobs import JobStatus, read_status, result_path, write_status
+from extractor.loaders.constants import ALLOWED_CONTENT_TYPES, SUPPORTED_EXTENSIONS
 from extractor.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 router = APIRouter()
 
-MAX_FILES_PER_JOB = 10
-MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
-ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
-ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
+MAX_FILES_PER_JOB = 25
+MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024
 SAFE_FILENAME_RE = re.compile(r"[^A-Za-z0-9._-]+")
 
 
@@ -31,20 +31,8 @@ def _sanitize_filename(name: str) -> str:
     return cleaned[:128]
 
 
-async def _write_status(job_id: str, status: str, **extra) -> None:
-    payload = {
-        "job_id": job_id,
-        "status": status,
-        "updated_at": datetime.now().isoformat(),
-        **extra,
-    }
-    status_path = settings.OUTPUTS_DIR / f"{job_id}.status.json"
-    async with aiofiles.open(status_path, "w", encoding="utf-8") as f:
-        await f.write(json.dumps(payload, ensure_ascii=False))
-
-
 @router.post("/upload")
-async def upload_images(request: Request, files: list[UploadFile] = File(...)):
+async def upload_images(request: Request, files: list[UploadFile] = File(...)):  # noqa: B008
     """Upload one or more images and queue them for processing."""
     if not files:
         raise HTTPException(status_code=400, detail="No files provided")
@@ -66,7 +54,7 @@ async def upload_images(request: Request, files: list[UploadFile] = File(...)):
                 detail=f"File {f.filename} has unsupported content type {f.content_type}",
             )
         ext = Path(f.filename or "").suffix.lower()
-        if ext not in ALLOWED_EXTENSIONS:
+        if ext not in SUPPORTED_EXTENSIONS:
             raise HTTPException(
                 status_code=400,
                 detail=f"File {f.filename} has unsupported extension",
@@ -93,7 +81,7 @@ async def upload_images(request: Request, files: list[UploadFile] = File(...)):
         "timestamp": timestamp,
     }
 
-    await _write_status(job_id, "queued", file_count=len(saved_paths))
+    await write_status(job_id, JobStatus.QUEUED, file_count=len(saved_paths))
 
     channel = request.app.state.rabbitmq_channel
     await channel.default_exchange.publish(
@@ -109,58 +97,55 @@ async def upload_images(request: Request, files: list[UploadFile] = File(...)):
             "job_id": job_id,
             "status": "queued",
             "file_count": len(saved_paths),
-            "message": f"{len(saved_paths)} image(s) sent to processing queue",
+            "message": f"{len(saved_paths)} file(s) sent to processing queue",
         },
         status_code=202,
     )
 
 
+async def _read_result(job_id: str) -> dict:
+    async with aiofiles.open(result_path(job_id), encoding="utf-8") as f:
+        return json.loads(await f.read())
+
+
 @router.get("/result/{job_id}")
 async def get_result(job_id: str):
     """Get extraction result by job ID."""
-    status_path = settings.OUTPUTS_DIR / f"{job_id}.status.json"
-    output_path = settings.OUTPUTS_DIR / f"{job_id}.json"
-
-    status_payload: dict = {}
-    if status_path.exists():
-        async with aiofiles.open(status_path, encoding="utf-8") as f:
-            status_payload = json.loads(await f.read())
-
+    output_path = result_path(job_id)
+    status_payload = await read_status(job_id) or {}
     status = status_payload.get("status")
 
-    if status == "completed" and output_path.exists():
-        async with aiofiles.open(output_path, encoding="utf-8") as f:
-            data = json.loads(await f.read())
+    if status == JobStatus.COMPLETED.value and output_path.exists():
         return JSONResponse(
             content={
                 "job_id": job_id,
-                "status": "completed",
-                "data": data,
+                "status": JobStatus.COMPLETED.value,
+                "data": await _read_result(job_id),
                 "error": None,
             },
         )
 
-    if status == "failed":
+    if status == JobStatus.FAILED.value:
         return JSONResponse(
             content={
                 "job_id": job_id,
-                "status": "failed",
+                "status": JobStatus.FAILED.value,
                 "data": None,
                 "error": status_payload.get("error", "Extraction failed"),
             },
         )
 
-    if status == "cancelled":
+    if status == JobStatus.CANCELLED.value:
         return JSONResponse(
             content={
                 "job_id": job_id,
-                "status": "cancelled",
+                "status": JobStatus.CANCELLED.value,
                 "data": None,
                 "error": None,
             },
         )
 
-    if status in {"queued", "processing"}:
+    if status in {JobStatus.QUEUED.value, JobStatus.PROCESSING.value}:
         return JSONResponse(
             content={
                 "job_id": job_id,
@@ -172,13 +157,11 @@ async def get_result(job_id: str):
         )
 
     if output_path.exists():
-        async with aiofiles.open(output_path, encoding="utf-8") as f:
-            data = json.loads(await f.read())
         return JSONResponse(
             content={
                 "job_id": job_id,
-                "status": "completed",
-                "data": data,
+                "status": JobStatus.COMPLETED.value,
+                "data": await _read_result(job_id),
                 "error": None,
             },
         )
@@ -199,12 +182,11 @@ async def cancel_job(job_id: str):
     if "/" in job_id or "\\" in job_id or ".." in job_id:
         raise HTTPException(status_code=400, detail="Invalid job id")
 
-    await _write_status(job_id, "cancelled")
+    await write_status(job_id, JobStatus.CANCELLED)
 
     job_dir = settings.UPLOAD_DIR / job_id
     shutil.rmtree(job_dir, ignore_errors=True)
-    result_path = settings.OUTPUTS_DIR / f"{job_id}.json"
-    result_path.unlink(missing_ok=True)
+    result_path(job_id).unlink(missing_ok=True)
 
     logger.info("Cancelled job %s and removed its files", job_id)
     return JSONResponse(content={"job_id": job_id, "status": "cancelled"})
