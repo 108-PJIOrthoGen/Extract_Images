@@ -25,13 +25,5 @@ class VLMRateLimitError(VLMClientError):
     """Rate limited (429)."""
 
 
-class VLMResponseError(VLMClientError):
-    """Invalid response from VLM (JSON parse fail, missing fields)."""
-
-
-class ValidationError(VLMResponseError):
-    """Missing fields in response compared to template."""
-
-
-class ImageLoadError(ExtractorError):
-    """Error when loading/encoding images."""
+class ValidationError(VLMClientError):
+    """Invalid VLM response: JSON parse failure or wrong-shaped/incomplete output."""
