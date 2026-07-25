@@ -25,15 +25,10 @@ async def lifespan(app: FastAPI):
         password=settings.RABBITMQ_PASSWORD,
     )
     app.state.rabbitmq_channel = await app.state.rabbitmq_connection.channel()
-    await app.state.rabbitmq_channel.declare_queue(
-        settings.RABBITMQ_QUEUE, durable=True
-    )
+    await app.state.rabbitmq_channel.declare_queue(settings.RABBITMQ_QUEUE, durable=True)
     logger.info("RabbitMQ connection established")
     yield
-    if (
-        app.state.rabbitmq_connection
-        and not app.state.rabbitmq_connection.is_closed
-    ):
+    if app.state.rabbitmq_connection and not app.state.rabbitmq_connection.is_closed:
         await app.state.rabbitmq_connection.close()
         logger.info("RabbitMQ connection closed")
 

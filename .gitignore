@@ -4,7 +4,6 @@
 # Generated Output
 outputs/
 uploads/
-data/
 
 # Python Cache
 __pycache__/
@@ -17,6 +16,11 @@ venv/
 .venv/
 env.bak/
 venv.bak/
+
+# Build artifacts
+*.egg-info/
+build/
+dist/
 
 # Tool caches
 .ruff_cache/
@@ -34,3 +38,6 @@ venv.bak/
 .DS_Store
 Thumbs.db
 TODO.md
+
+# Data: ignore private/runtime uploads but KEEP committed sample fixtures
+data/

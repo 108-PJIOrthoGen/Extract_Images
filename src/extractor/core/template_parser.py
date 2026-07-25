@@ -1,57 +1,49 @@
-"""Template parsing and JSON fixing utilities."""
+"""Template parsing utilities (fail-fast on malformed JSON)."""
 
 import json
-import re
 from pathlib import Path
 
+from extractor.exceptions import TemplateError
 from extractor.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
 
-def fix_malformed_json(content: str) -> str:
-    """
-    Quick fix for manually edited JSON strings that may contain syntax errors
-    (e.g., missing values, extra commas). Replace empty/missing values with placeholder.
-
-    Args:
-        content: Raw JSON text string.
-
-    Returns:
-        Cleaned JSON string with "__FILL_ME__" inserted.
-    """
-    # Replace cases like "key": , with "key": "__FILL_ME__",
-    fixed = re.sub(r':\s*,', ': "__FILL_ME__",', content)
-    # Replace cases with missing value before newline, e.g., "key": \n
-    fixed = re.sub(r':\s*\n', ': "__FILL_ME__"\n', fixed)
-    # Replace cases with missing value before closing brace, e.g., "key": }
-    fixed = re.sub(r':\s*}', ': "__FILL_ME__"}', fixed)
-    return fixed
-
-
 def load_template_schema(template_path: Path) -> str:
-    """
-    Read JSON template from file, normalize to fix manual editing errors,
-    and return as formatted string.
+    """Read the JSON template, validate it, and return a normalized string.
+
+    The template is medical reference data: if a hospital hand-edits it and
+    breaks the JSON, we fail fast with a precise error (line/column) rather than
+    silently "fixing" it -- a regex patch could corrupt valid values and feed the
+    VLM a wrong schema. The worker turns :class:`TemplateError` into
+    ``status="failed"`` so ops can correct the file.
 
     Args:
-        template_path: Path to schema file.
+        template_path: Path to the template schema file.
 
     Returns:
-        Standardized JSON string ready for model context.
+        Standardized (prettified, validated) JSON string ready for model context.
     """
     if not template_path.exists():
         logger.error(f"Template schema not found at: {template_path}")
         raise FileNotFoundError(f"Template schema not found at: {template_path}")
 
     content = template_path.read_text(encoding="utf-8")
-    fixed_content = fix_malformed_json(content)
 
     try:
-        # Load and dump again to ensure it is 100% valid JSON and prettified
-        data = json.loads(fixed_content)
-        return json.dumps(data, indent=2, ensure_ascii=False)
+        # Load and dump again to ensure it is 100% valid JSON and prettified.
+        data = json.loads(content)
     except json.JSONDecodeError as e:
-        logger.error(f"Loi cu phap khi phan tich fixed template JSON: {e}")
-        logger.warning("Van tiep tuc tra ve chuoi text tho mac du khong phai chuan JSON.")
-        return fixed_content
+        # Fallback for a hospital that edits template.json and breaks it: fail
+        # fast with a clear error instead of feeding raw text to the VLM (which
+        # would produce confusing downstream failures). The worker turns this
+        # into status="failed" with this message so ops can fix the template.
+        logger.error(f"Template JSON khong hop le: {e}")
+        raise TemplateError(
+            f"Template JSON khong hop le tai {template_path} (dong {e.lineno}, "
+            f"cot {e.colno}): {e.msg}. Hay kiem tra lai cau truc template.json."
+        ) from e
+
+    if not isinstance(data, dict) or not data:
+        raise TemplateError(f"Template tai {template_path} phai la mot JSON object khong rong.")
+    return json.dumps(data, indent=2, ensure_ascii=False)

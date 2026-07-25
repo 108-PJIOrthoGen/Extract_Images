@@ -1,6 +1,8 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.0
+    # Keep in lock-step with the ruff version used in `make lint` / CI so local
+    # hooks and CI format identically (avoid format drift on commit).
+    rev: v0.15.0
     hooks:
       - id: ruff
         args: [--fix]

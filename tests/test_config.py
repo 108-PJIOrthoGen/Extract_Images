@@ -1,8 +1,10 @@
 from unittest.mock import patch
 
 import pytest
+from pydantic import ValidationError
 
 from extractor.config import Settings
+from extractor.exceptions import ConfigurationError
 
 
 class TestSettings:
@@ -21,25 +23,25 @@ class TestSettings:
     def test_validate_raises_on_missing_api_key(self):
         settings = Settings()
         settings.OPENROUTER_API_KEY = ""
-        with pytest.raises(ValueError, match="OPENROUTER_API_KEY"):
-            settings.validate()
+        with pytest.raises(ConfigurationError, match="OPENROUTER_API_KEY"):
+            settings.validate_runtime()
 
     def test_validate_raises_on_invalid_api_key_placeholder(self):
         settings = Settings()
         settings.OPENROUTER_API_KEY = "your_openrouter_api_key_here"
-        with pytest.raises(ValueError, match="OPENROUTER_API_KEY"):
-            settings.validate()
+        with pytest.raises(ConfigurationError, match="OPENROUTER_API_KEY"):
+            settings.validate_runtime()
 
-    def test_validate_raises_on_invalid_port(self):
-        settings = Settings()
-        settings.RABBITMQ_PORT = 70000
-        with pytest.raises(ValueError, match="RABBITMQ_PORT"):
-            settings.validate()
+    @patch.dict("os.environ", {"RABBITMQ_PORT": "70000"})
+    def test_settings_rejects_invalid_port_at_load(self):
+        # Range validation now happens at load time via pydantic, not in validate().
+        with pytest.raises(ValidationError):
+            Settings()
 
     def test_validate_passes_with_valid_config(self, monkeypatch):
         monkeypatch.setenv("OPENROUTER_API_KEY", "valid-key")
         settings = Settings()
-        settings.validate()
+        settings.validate_runtime()
 
     def test_outputs_dir_creates_directory(self, tmp_path, monkeypatch):
         monkeypatch.setenv("OPENROUTER_API_KEY", "valid-key")
