@@ -8,15 +8,33 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from extractor.exceptions import ConfigurationError
 
-# When the package is pip-installed (e.g. inside Docker), ``__file__`` lives under
-# site-packages and the ``parent.parent.parent`` walk lands somewhere unrelated to
-# the project layout. Allow an explicit override via the BASE_DIR env var.
-_base_dir_override = os.getenv("BASE_DIR")
-BASE_DIR = (
-    Path(_base_dir_override).resolve()
-    if _base_dir_override
-    else Path(__file__).resolve().parent.parent.parent
-)
+TEMPLATE_RELATIVE_PATH = Path("templates") / "template.json"
+
+
+def _resolve_base_dir() -> Path:
+    """Resolve the runtime data root independently from package install path."""
+    override = os.getenv("BASE_DIR")
+    if override:
+        return Path(override).expanduser().resolve()
+
+    cwd = Path.cwd().resolve()
+    candidates = [cwd, *cwd.parents, Path(__file__).resolve().parent.parent.parent]
+    for candidate in candidates:
+        if (candidate / TEMPLATE_RELATIVE_PATH).exists():
+            return candidate
+
+    return Path(__file__).resolve().parent.parent.parent
+
+
+def _resolve_template_path() -> Path:
+    override = os.getenv("TEMPLATE_PATH")
+    if override:
+        path = Path(override).expanduser()
+        return path.resolve() if path.is_absolute() else (BASE_DIR / path).resolve()
+    return BASE_DIR / TEMPLATE_RELATIVE_PATH
+
+
+BASE_DIR = _resolve_base_dir()
 
 _PLACEHOLDER_API_KEY = "your_openrouter_api_key_here"
 
@@ -45,7 +63,11 @@ class Settings(BaseSettings):
     BASE_DIR: Path = BASE_DIR
 
     # Template
-    TEMPLATE_PATH: Path = BASE_DIR / "templates" / "template.json"
+    TEMPLATE_PATH: Path = Field(default_factory=_resolve_template_path)
+
+    def model_post_init(self, __context: object) -> None:
+        if not self.TEMPLATE_PATH.is_absolute():
+            self.TEMPLATE_PATH = (self.BASE_DIR / self.TEMPLATE_PATH).resolve()
 
     # OpenRouter
     OPENROUTER_API_KEY: str = ""

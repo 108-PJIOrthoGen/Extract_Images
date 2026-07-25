@@ -1,6 +1,7 @@
 FROM python:3.12-slim
 
 WORKDIR /app
+ENV BASE_DIR=/app
 
 RUN pip install uv
 

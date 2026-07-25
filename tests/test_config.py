@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 from pydantic import ValidationError
 
+from extractor import config
 from extractor.config import Settings
 from extractor.exceptions import ConfigurationError
 
@@ -51,3 +52,18 @@ class TestSettings:
         output_dir = settings.OUTPUTS_DIR
         assert output_dir.exists()
         assert output_dir.is_dir()
+
+    def test_base_dir_resolves_from_cwd_when_template_exists(self, tmp_path, monkeypatch):
+        template_dir = tmp_path / "templates"
+        template_dir.mkdir()
+        (template_dir / "template.json").write_text("{}", encoding="utf-8")
+        monkeypatch.delenv("BASE_DIR", raising=False)
+        monkeypatch.chdir(tmp_path)
+
+        assert config._resolve_base_dir() == tmp_path
+
+    def test_template_path_env_can_be_relative_to_base_dir(self, tmp_path, monkeypatch):
+        monkeypatch.setattr("extractor.config.BASE_DIR", tmp_path)
+        monkeypatch.setenv("TEMPLATE_PATH", "custom/template.json")
+
+        assert config._resolve_template_path() == tmp_path / "custom" / "template.json"
