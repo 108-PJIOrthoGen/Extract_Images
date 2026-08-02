@@ -4,7 +4,17 @@ The API (upload validation), the worker (directory scan) and the loaders all
 import from here so the set of accepted extensions never drifts apart.
 """
 
-IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tiff", ".tif"}
+IMAGE_EXTENSIONS = {
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".webp",
+    ".bmp",
+    ".tiff",
+    ".tif",
+    ".heic",
+    ".heif",
+}
 PDF_EXTENSIONS = {".pdf"}
 SUPPORTED_EXTENSIONS = IMAGE_EXTENSIONS | PDF_EXTENSIONS
 
@@ -17,6 +27,8 @@ MIME_MAP = {
     ".bmp": "image/bmp",
     ".tiff": "image/tiff",
     ".tif": "image/tiff",
+    ".heic": "image/heic",
+    ".heif": "image/heif",
 }
 
 # Content types accepted at the HTTP upload boundary, kept in lock-step with the
@@ -27,5 +39,7 @@ ALLOWED_CONTENT_TYPES = {
     "image/webp",
     "image/bmp",
     "image/tiff",
+    "image/heic",
+    "image/heif",
     "application/pdf",
 }

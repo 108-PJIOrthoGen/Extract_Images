@@ -10,7 +10,11 @@ modality-blind:
 """
 
 import base64
+from io import BytesIO
 from pathlib import Path
+
+from PIL import Image
+from pillow_heif import register_heif_opener
 
 from extractor.loaders.constants import (
     IMAGE_EXTENSIONS,
@@ -23,6 +27,9 @@ from extractor.loaders.pdf_loader import load_pdf_parts
 from extractor.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
+register_heif_opener()
+
+HEIF_EXTENSIONS = {".heic", ".heif"}
 
 
 def get_base64_image(image_path: Path) -> str:
@@ -46,6 +53,13 @@ def get_base64_image(image_path: Path) -> str:
         logger.warning(f"Unknown extension {ext} for {image_path}, defaulting to image/jpeg")
 
     try:
+        if ext in HEIF_EXTENSIONS:
+            with Image.open(image_path) as image:
+                converted = image.convert("RGB")
+                output = BytesIO()
+                converted.save(output, format="JPEG", quality=95, optimize=True)
+            encoded = base64.b64encode(output.getvalue()).decode("utf-8")
+            return f"data:image/jpeg;base64,{encoded}"
         encoded = base64.b64encode(image_path.read_bytes()).decode("utf-8")
         return f"data:{mime_type};base64,{encoded}"
     except Exception as e:

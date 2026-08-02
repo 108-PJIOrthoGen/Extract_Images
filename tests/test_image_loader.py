@@ -1,4 +1,6 @@
 import pytest
+from PIL import Image
+from pillow_heif import from_pillow
 
 from extractor.loaders.constants import (
     IMAGE_EXTENSIONS,
@@ -39,6 +41,16 @@ class TestImageLoader:
         result = get_base64_image(img_path)
         assert result.startswith("data:image/webp;base64,")
 
+    def test_get_base64_image_decodes_heic_to_jpeg_data_url(self, tmp_path):
+        image = Image.new("RGB", (2, 2), color=(220, 30, 30))
+        heif = from_pillow(image)
+        image_path = tmp_path / "camera.heic"
+        heif.save(image_path, quality=90)
+
+        result = get_base64_image(image_path)
+
+        assert result.startswith("data:image/jpeg;base64,")
+
     def test_get_base64_image_defaults_to_jpeg_for_unknown_extension(self, tmp_path):
         img_path = tmp_path / "test.xyz"
         img_path.write_bytes(b"fake data")
@@ -67,7 +79,17 @@ class TestImageLoader:
         assert manifest == []
 
     def test_mime_map_contains_expected_extensions(self):
-        expected = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tiff", ".tif"}
+        expected = {
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".webp",
+            ".bmp",
+            ".tiff",
+            ".tif",
+            ".heic",
+            ".heif",
+        }
         assert MIME_MAP.keys() == expected
 
     def test_image_extensions_match_mime_map(self):

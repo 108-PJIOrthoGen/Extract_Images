@@ -26,6 +26,7 @@ dist/
 .ruff_cache/
 .mypy_cache/
 .pytest_cache/
+.uv-cache/
 
 # IDE / Editors
 .vscode/
@@ -38,6 +39,7 @@ dist/
 .DS_Store
 Thumbs.db
 TODO.md
-
+AGENTS.md
+CLAUDE.md
 # Data: ignore private/runtime uploads but KEEP committed sample fixtures
 data/

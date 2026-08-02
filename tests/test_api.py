@@ -50,6 +50,17 @@ async def test_upload_returns_202(app):
 
 
 @pytest.mark.asyncio
+async def test_upload_accepts_heic(app):
+    async with _client(app) as client:
+        response = await client.post(
+            "/upload",
+            files={"files": ("camera.heic", b"fake_heic_data", "image/heic")},
+        )
+        assert response.status_code == 202
+        assert response.json()["file_count"] == 1
+
+
+@pytest.mark.asyncio
 async def test_upload_rejects_non_image(app):
     async with _client(app) as client:
         response = await client.post(

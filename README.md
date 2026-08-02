@@ -1,9 +1,10 @@
 # Medical Result VLM Extractor
 
-Dự án này là công cụ tự động trích xuất thông tin từ **ảnh** (JPG/PNG/WebP...) hoặc **PDF** giấy tờ, phiếu kết quả khám bệnh, hồ sơ y tế bằng Vision Language Model (VLM) thông qua OpenRouter API.
+Dự án này là công cụ tự động trích xuất thông tin từ **ảnh** (JPG/PNG/WebP/HEIC/HEIF...) hoặc **PDF** giấy tờ, phiếu kết quả khám bệnh, hồ sơ y tế bằng Vision Language Model (VLM) thông qua OpenRouter API.
 
 ## Tính Năng
 - **Đa định dạng (PDF hybrid)**: Nhận cả ảnh và PDF. PDF số hóa được **trích thẳng text layer** (chính xác, rẻ, đúng dấu tiếng Việt); PDF scan thì **render thành ảnh** (PyMuPDF) cho VLM. Cả hai đi chung một pipeline.
+- **Ảnh từ điện thoại**: HEIC/HEIF được giải mã trong bộ nhớ và chuyển thành JPEG chất lượng cao trước khi gửi vào VLM.
 - **Gộp theo bệnh nhân**: Nhiều phiếu (PDF + ảnh) của cùng một bệnh nhân được đọc hết và gộp vào **một bản ghi JSON** duy nhất.
 - **Template tổng quát, điền tối đa**: `template.json` là biểu mẫu đầy đủ các nhóm xét nghiệm. Model **giữ nguyên toàn bộ trường**, điền giá trị tìm được; trường nào không có trong tài liệu thì để `null` — **không bao giờ bị xóa**.
 - **Validate đủ trường**: Bắt buộc output chứa **tất cả** key của template (tự động retry nếu thiếu), đảm bảo không sót dữ liệu.
