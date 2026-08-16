@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import shutil
 from pathlib import Path
 
 import aio_pika
@@ -20,6 +21,51 @@ from extractor.utils.logger import setup_logger
 logger = setup_logger(__name__)
 
 setup_tracing("extract-worker")
+
+_TERMINAL_STATUSES = frozenset(
+    {
+        JobStatus.COMPLETED.value,
+        JobStatus.FAILED.value,
+        JobStatus.CANCELLED.value,
+    }
+)
+
+
+def _trusted_upload_dir(job_id: str) -> Path | None:
+    """Return this job's directory only when it is directly under UPLOAD_DIR.
+
+    RabbitMQ payloads contain a file path, but deletion must never trust that
+    path: a malformed or injected message must not be able to remove arbitrary
+    files.  The API creates each upload directly below the configured root.
+    """
+    upload_root = settings.UPLOAD_DIR.resolve()
+    candidate = (upload_root / job_id).resolve()
+    return candidate if candidate.parent == upload_root else None
+
+
+def cleanup_upload_dir(job_id: str) -> None:
+    """Remove one terminal job's source files, confined to ``UPLOAD_DIR``."""
+    job_dir = _trusted_upload_dir(job_id)
+    if job_dir is None:
+        logger.warning("Refusing to clean upload directory for invalid job id %r", job_id)
+        return
+
+    shutil.rmtree(job_dir, ignore_errors=True)
+
+
+async def cleanup_terminal_uploads() -> None:
+    """Remove source files left by terminal jobs from an earlier worker run."""
+    for status_file in settings.OUTPUTS_DIR.glob("*.status.json"):
+        job_id = status_file.name.removesuffix(".status.json")
+        try:
+            async with aiofiles.open(status_file, encoding="utf-8") as f:
+                status = json.loads(await f.read()).get("status")
+        except (OSError, json.JSONDecodeError) as exc:
+            logger.warning("Unable to read job status %s: %s", status_file, exc)
+            continue
+
+        if status in _TERMINAL_STATUSES:
+            cleanup_upload_dir(job_id)
 
 
 async def on_message(message: aio_pika.IncomingMessage):
@@ -95,10 +141,18 @@ async def on_message(message: aio_pika.IncomingMessage):
                 await write_status(job_id, JobStatus.FAILED, error=str(e))
             except Exception as status_err:
                 logger.error(f"Failed to persist failure status: {status_err}")
+        finally:
+            # The VLM has finished (or failed), so the original source files
+            # are no longer needed.  Results and status remain in OUTPUTS_DIR
+            # for the API to serve.
+            if job_id != "unknown":
+                cleanup_upload_dir(job_id)
 
 
 async def main():
     """Main worker entry point."""
+    await cleanup_terminal_uploads()
+
     connection = await aio_pika.connect_robust(
         host=settings.RABBITMQ_HOST,
         port=settings.RABBITMQ_PORT,

@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from extractor.jobs import JobStatus
-from extractor.worker.consumer import on_message
+from extractor.worker.consumer import cleanup_terminal_uploads, cleanup_upload_dir, on_message
 
 
 def _message(body: dict | bytes) -> MagicMock:
@@ -17,6 +17,78 @@ def _message(body: dict | bytes) -> MagicMock:
 
 
 class TestConsumer:
+    @pytest.mark.asyncio
+    async def test_on_message_removes_upload_after_completion(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("UPLOAD_DIR", str(tmp_path / "uploads"))
+        upload = tmp_path / "uploads" / "job-123"
+        upload.mkdir(parents=True)
+        (upload / "image.png").write_bytes(b"fake")
+        msg = _message({"job_id": "job-123", "file_dir": str(upload)})
+
+        with (
+            patch("extractor.worker.consumer.write_status", new=AsyncMock()),
+            patch("extractor.worker.consumer.is_cancelled", new=AsyncMock(return_value=False)),
+            patch("extractor.worker.consumer.result_path", return_value=tmp_path / "out.json"),
+            patch("extractor.worker.consumer.load_template_schema", return_value='{"name": ""}'),
+            patch(
+                "extractor.worker.consumer.load_documents_with_manifest",
+                return_value=([{"type": "image_url"}], []),
+            ),
+            patch("extractor.worker.consumer.ExtractionPipeline") as pipeline,
+        ):
+            pipeline.return_value.extract = MagicMock(return_value='{"name": "John"}')
+            await on_message(msg)
+
+        assert not upload.exists()
+        assert (tmp_path / "out.json").read_text() == '{"name": "John"}'
+
+    @pytest.mark.asyncio
+    async def test_on_message_removes_upload_after_failure(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("UPLOAD_DIR", str(tmp_path / "uploads"))
+        upload = tmp_path / "uploads" / "job-failed"
+        upload.mkdir(parents=True)
+        (upload / "image.png").write_bytes(b"fake")
+        msg = _message({"job_id": "job-failed", "file_dir": str(upload)})
+
+        with (
+            patch("extractor.worker.consumer.write_status", new=AsyncMock()),
+            patch("extractor.worker.consumer.is_cancelled", new=AsyncMock(return_value=False)),
+            patch(
+                "extractor.worker.consumer.load_template_schema",
+                side_effect=Exception("Template error"),
+            ),
+        ):
+            await on_message(msg)
+
+        assert not upload.exists()
+
+    @pytest.mark.asyncio
+    async def test_cleanup_terminal_uploads_removes_only_terminal_jobs(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("UPLOAD_DIR", str(tmp_path / "uploads"))
+        monkeypatch.setenv("OUTPUTS_DIR", str(tmp_path / "outputs"))
+        completed_upload = tmp_path / "uploads" / "job-done"
+        queued_upload = tmp_path / "uploads" / "job-queued"
+        completed_upload.mkdir(parents=True)
+        queued_upload.mkdir(parents=True)
+        outputs = tmp_path / "outputs"
+        outputs.mkdir()
+        (outputs / "job-done.status.json").write_text('{"status": "completed"}')
+        (outputs / "job-queued.status.json").write_text('{"status": "queued"}')
+
+        await cleanup_terminal_uploads()
+
+        assert not completed_upload.exists()
+        assert queued_upload.exists()
+
+    def test_cleanup_upload_dir_rejects_path_traversal(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("UPLOAD_DIR", str(tmp_path / "uploads"))
+        sensitive_dir = tmp_path / "sensitive"
+        sensitive_dir.mkdir()
+
+        cleanup_upload_dir("../sensitive")
+
+        assert sensitive_dir.exists()
+
     @pytest.mark.asyncio
     async def test_on_message_processes_job(self, tmp_path):
         upload = tmp_path / "job"

@@ -167,6 +167,7 @@ docker-compose up --build
 |--------|----------|-------|
 | POST | `/upload` | Upload 1 hoặc nhiều file (ảnh hoặc PDF) của 1 bệnh nhân, gửi vào queue |
 | GET | `/result/{job_id}` | Lấy kết quả JSON theo job_id |
+| DELETE | `/jobs/{job_id}` | Hủy job và xóa kết quả/trạng thái còn lưu |
 | GET | `/health` | Health check |
 
 ### Upload File (ảnh và/hoặc PDF)
@@ -274,12 +275,18 @@ Một lần xử lý sinh các file sau trong `outputs/`:
 
 **Mỗi lần upload = một `job_id` mới = bộ file mới** (không ghi đè job cũ). Đây là lý do `outputs/` có nhiều file: mỗi `job_id` để lại 2 file (`.json` + `.status.json`).
 
+### Vòng đời ảnh/PDF upload
+
+Ảnh/PDF được lưu tạm ở `uploads/<job_id>/` chỉ để worker đọc sau khi nhận message RabbitMQ. Worker xóa thư mục này ngay khi job đạt trạng thái `completed`, `failed` hoặc `cancelled`; khi worker khởi động, nó cũng dọn các thư mục terminal còn sót từ lần chạy trước. Vì vậy `uploads/` không tích lũy ảnh đã xử lý.
+
+Kết quả và trạng thái vẫn nằm ở `outputs/` để `GET /result/{job_id}` hoạt động. Đây có thể chứa dữ liệu y tế; hệ thống tích hợp nên đặt chính sách lưu giữ/xóa riêng cho `outputs/` và gọi `DELETE /jobs/{job_id}` khi không còn cần truy vấn kết quả.
+
 ### Upload Bổ Sung (khi báo thiếu) — tạo job MỚI, KHÔNG sửa file cũ
 
 Hệ thống gộp toàn bộ phiếu trong **một lần gọi VLM** (re-run cả set). Khi user bổ sung file:
 - Backend **gửi lại CẢ bộ file** (cũ + mới) qua `/upload` → sinh **`job_id` MỚI** → **file mới** `{job_id_moi}.json` + `.status.json`.
 - File của job cũ **KHÔNG** được cập nhật (job_id khác nhau).
-- Backend nên: lưu mapping `bệnh nhân → job_id mới nhất`, hiển thị job mới nhất cho user, và **dọn job cũ** bằng `DELETE /jobs/{job_id}` (xóa cả `uploads/` lẫn `outputs/` của job đó).
+- Backend nên: lưu mapping `bệnh nhân → job_id mới nhất`, hiển thị job mới nhất cho user, và **dọn kết quả job cũ** bằng `DELETE /jobs/{job_id}` (ảnh/PDF nguồn đã được worker tự xóa khi job kết thúc).
 
 > 💡 Khuyến nghị vận hành: chạy cron/script dọn định kỳ các file job cũ (theo `updated_at` trong `.status.json`) để `outputs/` không phình to.
 
